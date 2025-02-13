@@ -35,7 +35,7 @@ defmodule Caltar.MixProject do
       {:jason, "~> 1.2"},
       {:phoenix_live_view, "~> 1.0.4"},
       {:bandit, "~> 1.5"},
-      {:box, git: "https://github.com/nicklayb/box_ex.git", tag: "0.3.0"},
+      {:box, git: "https://github.com/nicklayb/box_ex.git", tag: "0.4.0"},
       {:timex, "~> 3.7.11"}
     ]
   end

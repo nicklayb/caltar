@@ -7,7 +7,7 @@ defmodule Caltar.Application do
       Caltar.Repo,
       {Ecto.Migrator,
        repos: Application.fetch_env!(:caltar, :ecto_repos), skip: skip_migrations?()},
-      {Phoenix.PubSub, name: Caltar.PubSub},
+      Caltar.PubSub,
       CaltarWeb.Endpoint
     ]
 
