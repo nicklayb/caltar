@@ -1,13 +1,22 @@
 defmodule CaltarWeb.Main.Live do
+  alias Caltar.Calendar
   use CaltarWeb, :live_view
 
   def mount(_params, _session, socket) do
-    # Let's assume a fixed temperature for now
-    temperature = 70
-    {:ok, assign(socket, :temperature, temperature)}
+    socket =
+      socket
+      |> assign(:clock, Caltar.Date.now!())
+      |> assign(:calendar, Calendar.build(Caltar.Date.now!()))
+      |> subscribe("clock")
+
+    {:ok, socket}
   end
 
-  def handle_event("inc_temperature", _params, socket) do
-    {:noreply, update(socket, :temperature, &(&1 + 1))}
+  def handle_pubsub(
+        %Box.PubSub.Message{topic: "clock", message: :updated, params: new_clock},
+        socket
+      ) do
+    socket = assign(socket, :clock, new_clock)
+    {:noreply, socket}
   end
 end

@@ -1,3 +1,8 @@
-
-Current temperature: {@temperature}°F
-<button phx-click="inc_temperature">+</button>
+<div>
+  <div>
+    <Components.Clock.render clock={@clock} />
+  </div>
+  <div class="flex flex-col flex-1 w-full">
+    <Components.Calendar.render calendar={@calendar} />
+  </div>
+</div>

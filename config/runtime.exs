@@ -2,6 +2,8 @@ import Config
 
 config :caltar, release_name: Box.Config.get("RELEASE_NAME")
 
+config :caltar, Caltar.Date, timezone: Box.Config.get("TZ", default: "Etc/UTC")
+
 config :caltar, Caltar.Repo,
   database:
     Box.Config.get!("DATABASE_PATH",

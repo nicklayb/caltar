@@ -34,6 +34,7 @@ defmodule Caltar.MixProject do
       {:gettext, "~> 0.26"},
       {:jason, "~> 1.2"},
       {:phoenix_live_view, "~> 1.0.4"},
+      {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:bandit, "~> 1.5"},
       {:box, git: "https://github.com/nicklayb/box_ex.git", tag: "0.4.0"},
       {:timex, "~> 3.7.11"}

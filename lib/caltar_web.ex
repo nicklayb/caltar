@@ -58,6 +58,13 @@ defmodule CaltarWeb do
   def live_view do
     quote do
       use Phoenix.LiveView
+      require Logger
+      import CaltarWeb.PubSub
+
+      on_mount(CaltarWeb.Hooks.PubSubInterceptor)
+
+      @before_compile {CaltarWeb, :live_view_before_compile}
+
       unquote(view_helpers())
     end
   end
@@ -66,11 +73,21 @@ defmodule CaltarWeb do
     quote do
       import CaltarWeb.Gettext
       alias CaltarWeb.Html
+      alias CaltarWeb.Components
       unquote(verified_routes())
     end
   end
 
   defmacro __using__(which) when is_atom(which) do
     apply(__MODULE__, which, [])
+  end
+
+  defmacro live_view_before_compile(_) do
+    quote do
+      def handle_pubsub(message, socket) do
+        Logger.warning("#{socket.view} unhandled pub sub #{inspect(message)}")
+        {:noreply, socket}
+      end
+    end
   end
 end

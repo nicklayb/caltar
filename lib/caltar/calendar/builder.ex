@@ -5,7 +5,7 @@ defmodule Caltar.Calendar.Builder do
   @days_in_week 7
   @type date :: Timex.Types.datetime() | Timex.Types.date()
   @type calendar :: [week()]
-  @type week :: [date(), ...]
+  @type week :: [date()]
 
   @doc """
   Build the month calendar for the given date. It also pads days before and after the given month to give a full 7-day per week list of list of date.

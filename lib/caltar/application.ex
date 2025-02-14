@@ -4,6 +4,7 @@ defmodule Caltar.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      Caltar.Clock,
       Caltar.Repo,
       {Ecto.Migrator,
        repos: Application.fetch_env!(:caltar, :ecto_repos), skip: skip_migrations?()},
