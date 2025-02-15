@@ -3,21 +3,21 @@ defmodule Caltar.Calendar.Builder do
   Builds a month calendar from a given date.
   """
   @days_in_week 7
-  @type date :: Timex.Types.datetime() | Timex.Types.date()
+  @type date :: DateTime.t()
   @type calendar :: [week()]
   @type week :: [date()]
 
   @doc """
   Build the month calendar for the given date. It also pads days before and after the given month to give a full 7-day per week list of list of date.
   """
-  @spec build_month(Timex.Types.datetime()) :: %{
+  @spec build_month(DateTime.t()) :: %{
           days: calendar(),
           start_date: date(),
           end_date: date()
         }
   def build_month(current_date) do
-    start_date = Timex.beginning_of_month(current_date)
-    end_date = Timex.end_of_month(current_date)
+    start_date = Caltar.Date.start_of_month(current_date)
+    end_date = Caltar.Date.end_of_month(current_date)
 
     start_date
     |> build_month(end_date, %{days: [], start_date: start_date, end_date: end_date})
@@ -34,18 +34,18 @@ defmodule Caltar.Calendar.Builder do
     acc = Map.update!(acc, :days, &(&1 ++ [current_date]))
 
     current_date
-    |> Timex.shift(days: 1)
+    |> DateTime.shift(day: 1)
     |> build_month(end_date, acc)
   end
 
   defp build_month(_, _, acc), do: acc
 
   defp pad_start(%{days: [start | _]} = acc) do
-    weekday = next_weekday(Timex.weekday(start))
+    weekday = next_weekday(Caltar.Date.weekday(start))
 
     if weekday > 1 do
       range = 1..(weekday - 1)
-      pad = Enum.map(range, fn day -> Timex.shift(start, days: -(weekday - day)) end)
+      pad = Enum.map(range, fn day -> DateTime.shift(start, day: -(weekday - day)) end)
 
       acc
       |> Map.update!(:days, &(pad ++ &1))
@@ -57,12 +57,12 @@ defmodule Caltar.Calendar.Builder do
 
   defp pad_end(%{days: month} = acc) do
     end_date = List.last(month)
-    weekday = Timex.weekday(end_date) + 1
+    weekday = Caltar.Date.weekday(end_date) + 1
     diff = @days_in_week - weekday
 
     if diff > 0 do
       range = 1..diff
-      pad = Enum.map(range, fn day -> Timex.shift(end_date, days: day) end)
+      pad = Enum.map(range, fn day -> DateTime.shift(end_date, day: day) end)
 
       acc
       |> Map.update!(:days, &(&1 ++ pad))

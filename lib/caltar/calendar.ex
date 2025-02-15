@@ -11,11 +11,19 @@ defmodule Caltar.Calendar do
     %Calendar{dates: days, start_date: start_date, end_date: end_date, current_time: date_time}
   end
 
+  def events_for_date(%Calendar{events: events}, date) do
+    date = DateTime.to_date(date)
+
+    Map.get(events, date, [])
+  end
+
   def put_event(%Calendar{} = calendar, %CalendarEvent{} = event) do
     if in_calendar?(calendar, event) do
+      accumulator = CalendarEvent.remove_old_events(calendar, event)
+
       event
       |> CalendarEvent.to_occurences()
-      |> Enum.reduce(calendar, fn {date, event}, acc ->
+      |> Enum.reduce(accumulator, fn {date, event}, acc ->
         map_events(acc, date, fn _date, events ->
           [event | events]
         end)
@@ -23,6 +31,16 @@ defmodule Caltar.Calendar do
     else
       {:error, :not_in_calendar}
     end
+  end
+
+  defp remove_old_events(%Calendar{events: events} = calendar, %CalendarEvent{id: id}) do
+    new_events =
+      Enum.reduce(events, %{}, fn {key, events}, acc ->
+        updated_events = Enum.reject(events, &(&1.id == id))
+        Map.put(acc, key, updated_events)
+      end)
+
+    %Calendar{calendar | events: new_events}
   end
 
   def current_month?(%Calendar{current_time: current_time}, day) do

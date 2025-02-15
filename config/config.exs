@@ -13,6 +13,10 @@ config :caltar, CaltarWeb.Endpoint,
   ],
   pubsub_server: Caltar.PubSub
 
+config :ex_cldr, default_backend: Caltar.Cldr
+
+config :elixir, :time_zone_database, Tz.TimeZoneDatabase
+
 config :esbuild,
   version: "0.17.11",
   caltar: [

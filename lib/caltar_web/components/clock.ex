@@ -14,6 +14,8 @@ defmodule CaltarWeb.Components.Clock do
   end
 
   defp number(assigns) do
+    assigns = update(assigns, :value, &String.pad_leading(to_string(&1), 2, "0"))
+
     ~H"""
     <div class="">{@value}</div>
     """

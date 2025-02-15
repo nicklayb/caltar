@@ -1,6 +1,6 @@
 defmodule Caltar.Calendar.Event do
   alias Caltar.Calendar.Event
-  defstruct [:starts_at, :ends_at, :title, :color]
+  defstruct [:id, :starts_at, :ends_at, :title, :color]
 
   def to_occurences(%Event{starts_at: starts_at, ends_at: ends_at} = event) do
     base_date = DateTime.to_date(starts_at)
