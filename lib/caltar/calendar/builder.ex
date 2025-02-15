@@ -15,7 +15,13 @@ defmodule Caltar.Calendar.Builder do
           start_date: date(),
           end_date: date()
         }
-  def build_month(current_date) do
+  def build_month(%DateTime{} = current_date) do
+    current_date
+    |> DateTime.to_date()
+    |> build_month()
+  end
+
+  def build_month(%Date{} = current_date) do
     start_date = Caltar.Date.start_of_month(current_date)
     end_date = Caltar.Date.end_of_month(current_date)
 
@@ -34,7 +40,7 @@ defmodule Caltar.Calendar.Builder do
     acc = Map.update!(acc, :days, &(&1 ++ [current_date]))
 
     current_date
-    |> DateTime.shift(day: 1)
+    |> Date.shift(day: 1)
     |> build_month(end_date, acc)
   end
 
@@ -45,7 +51,7 @@ defmodule Caltar.Calendar.Builder do
 
     if weekday > 1 do
       range = 1..(weekday - 1)
-      pad = Enum.map(range, fn day -> DateTime.shift(start, day: -(weekday - day)) end)
+      pad = Enum.map(range, fn day -> Date.shift(start, day: -(weekday - day)) end)
 
       acc
       |> Map.update!(:days, &(pad ++ &1))
@@ -62,7 +68,7 @@ defmodule Caltar.Calendar.Builder do
 
     if diff > 0 do
       range = 1..diff
-      pad = Enum.map(range, fn day -> DateTime.shift(end_date, day: day) end)
+      pad = Enum.map(range, fn day -> Date.shift(end_date, day: day) end)
 
       acc
       |> Map.update!(:days, &(&1 ++ pad))

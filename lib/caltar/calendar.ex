@@ -12,9 +12,18 @@ defmodule Caltar.Calendar do
   end
 
   def events_for_date(%Calendar{events: events}, date) do
-    date = DateTime.to_date(date)
-
     Map.get(events, date, [])
+  end
+
+  def put_events(%Calendar{} = calendar, events) do
+    IO.inspect(events)
+
+    Enum.reduce(events, calendar, fn event, acc ->
+      case put_event(acc, event) do
+        {:ok, acc} -> acc
+        _ -> acc
+      end
+    end)
   end
 
   def put_event(%Calendar{} = calendar, %CalendarEvent{} = event) do
@@ -28,6 +37,7 @@ defmodule Caltar.Calendar do
           [event | events]
         end)
       end)
+      |> Box.Result.succeed()
     else
       {:error, :not_in_calendar}
     end
@@ -55,17 +65,21 @@ defmodule Caltar.Calendar do
     Caltar.Date.same_day?(current_time, day)
   end
 
-  defp in_calendar?(%Calendar{start_date: start_date, end_date: end_date}, %CalendarEvent{
+  defp in_calendar?(%Calendar{start_date: calendar_start, end_date: calendar_end}, %CalendarEvent{
          starts_at: starts_at,
          ends_at: ends_at
        }) do
-    Date.after?(start_date, starts_at) and Date.before?(end_date, ends_at)
+    event_start = DateTime.to_date(starts_at)
+    event_end = DateTime.to_date(ends_at)
+
+    Date.after?(event_start, calendar_start) and
+      Date.before?(event_end, calendar_end)
   end
 
   defp map_events(%Calendar{events: events} = calendar, date, function) do
     previous_events = Map.get(events, date, [])
 
-    updated_events = function.(date, previous_events)
+    updated_events = Map.put(events, date, function.(date, previous_events))
 
     %Calendar{calendar | events: updated_events}
   end

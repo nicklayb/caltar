@@ -5,7 +5,7 @@ defmodule CaltarWeb.Components.Calendar do
 
   def render(assigns) do
     ~H"""
-    <div class="bordser bosrder-blue">
+    <div>
       <.header />
       <%= for week <- @calendar.dates do %>
         <.week calendar={@calendar} week={week} />
@@ -35,7 +35,7 @@ defmodule CaltarWeb.Components.Calendar do
     assigns = assign(assigns, :current_week?, Calendar.current_week?(calendar, week))
 
     ~H"""
-      <div class="flex bsorder-b last:bsorder-0">
+      <div class="flex">
         <%= for day <- @week do %>
           <.day calendar={@calendar} day={day} current_week?={@current_week?}/>
         <% end %>
@@ -51,15 +51,23 @@ defmodule CaltarWeb.Components.Calendar do
       |> assign(:events, Calendar.events_for_date(calendar, day))
 
     ~H"""
-      <div class="flex flex-col flex-1 border m-0.5 rounded-sm">
-        <div class={Html.class("pl-2 py-1 text-sm border-b", [{@current_day?, "font-bold"}, {not @current_month?, "text-gray-500"}])}>
+      <div class={Html.class("flex flex-col flex-1 border m-0.5 rounded-sm", [{not @current_month?, "opacity-50"}, {@current_day?, "text-pink-500 border-pink-600"}])}>
+        <div class={Html.class("pl-2 py-1 bg-gray-800 text-white text-sm border-b", [{@current_day?, "bg-pink-500 text-white border-b-pink-500"}])}>
           {@day.day}
         </div>
-        <div class={Html.class({@current_week?, "h-96", "h-24"})}>
+        <div class="p-1 h-32">
           <%= for event <- @events do %>
-            <div><%= event.title %></div>
+            <.event event={event} />
           <% end %>
         </div>
+      </div>
+    """
+  end
+
+  defp event(assigns) do
+    ~H"""
+      <div class="p-0.5 rounded-sm text-sm text-gray-800" style={"background-color: #{@event.color};"}>
+        <%= @event.title %>
       </div>
     """
   end
