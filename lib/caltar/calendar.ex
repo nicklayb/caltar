@@ -19,7 +19,7 @@ defmodule Caltar.Calendar do
 
   def put_event(%Calendar{} = calendar, %CalendarEvent{} = event) do
     if in_calendar?(calendar, event) do
-      accumulator = CalendarEvent.remove_old_events(calendar, event)
+      accumulator = remove_old_events(calendar, event)
 
       event
       |> CalendarEvent.to_occurences()
