@@ -35,10 +35,16 @@ defmodule Caltar.Calendar.Server do
   end
 
   def handle_info(
-        %Box.PubSub.Message{topic: "calendar", message: :new_events, params: events},
+        %Box.PubSub.Message{topic: "calendar", message: :new_events, params: {provider, events}},
         state
       ) do
-    state = map_calendar(state, &Calendar.put_events(&1, events))
+    state =
+      map_calendar(state, fn calendar ->
+        calendar
+        |> Calendar.reject_events(fn _date, event -> event.provider == provider end)
+        |> Calendar.put_events(events)
+      end)
+
     {:noreply, state}
   end
 

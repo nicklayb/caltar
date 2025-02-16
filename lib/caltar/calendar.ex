@@ -16,13 +16,17 @@ defmodule Caltar.Calendar do
   end
 
   def put_events(%Calendar{} = calendar, events) do
-    IO.inspect(events)
-
     Enum.reduce(events, calendar, fn event, acc ->
       case put_event(acc, event) do
         {:ok, acc} -> acc
         _ -> acc
       end
+    end)
+  end
+
+  def reject_events(%Calendar{} = calendar, function) do
+    map_all_events(calendar, fn date, events ->
+      Enum.reject(events, fn event -> function.(date, event) end)
     end)
   end
 
@@ -76,11 +80,24 @@ defmodule Caltar.Calendar do
       Date.before?(event_end, calendar_end)
   end
 
-  defp map_events(%Calendar{events: events} = calendar, date, function) do
-    previous_events = Map.get(events, date, [])
+  defp map_events(%Calendar{} = calendar, date, function) do
+    map_events(calendar, fn events ->
+      previous_events = Map.get(events, date, [])
 
-    updated_events = Map.put(events, date, function.(date, previous_events))
+      Map.put(events, date, function.(date, previous_events))
+    end)
+  end
 
-    %Calendar{calendar | events: updated_events}
+  defp map_events(%Calendar{events: events} = calendar, function) do
+    %Calendar{calendar | events: function.(events)}
+  end
+
+  defp map_all_events(%Calendar{} = calendar, function) do
+    map_events(calendar, fn events ->
+      Enum.reduce(events, %{}, fn {date, events}, acc ->
+        updated = function.(date, events)
+        Map.put(acc, date, updated)
+      end)
+    end)
   end
 end
