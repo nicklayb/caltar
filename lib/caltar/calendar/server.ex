@@ -68,13 +68,41 @@ defmodule Caltar.Calendar.Server do
 
     calendar =
       Calendar.put_events(calendar, [
-        %Calendar.Event{
+        Caltar.Factory.build(:calendar_event,
           id: "test",
+          title: "Show de musique de pwell de punk de tassez vous les cassé",
+          starts_at: DateTime.new!(~D[2025-02-21], ~T[09:30:00], "America/Montreal"),
+          ends_at: DateTime.new!(~D[2025-02-22], ~T[15:00:00], "America/Montreal"),
+          color: "#abc321"
+        ),
+        Caltar.Factory.build(:calendar_event,
+          id: "test1",
           title: "Show de musique",
           starts_at: DateTime.new!(~D[2025-02-21], ~T[09:30:00], "America/Montreal"),
           ends_at: DateTime.new!(~D[2025-02-22], ~T[15:00:00], "America/Montreal"),
           color: "#abc321"
-        }
+        ),
+        Caltar.Factory.build(:calendar_event,
+          id: "test2",
+          title: "Show de musique",
+          starts_at: DateTime.new!(~D[2025-02-21], ~T[13:10:00], "America/Montreal"),
+          ends_at: DateTime.new!(~D[2025-02-21], ~T[16:30:00], "America/Montreal"),
+          color: "#abc321"
+        ),
+        Caltar.Factory.build(:calendar_event,
+          id: "test3",
+          title: "Show de musique",
+          starts_at: DateTime.new!(~D[2025-02-21], ~T[08:30:00], "America/Montreal"),
+          ends_at: DateTime.new!(~D[2025-02-21], ~T[10:30:00], "America/Montreal"),
+          color: "#abc321"
+        ),
+        Caltar.Factory.build(:calendar_event,
+          id: "test4",
+          title: "Show de musique",
+          starts_at: DateTime.new!(~D[2025-02-21], ~T[20:30:00], "America/Montreal"),
+          ends_at: DateTime.new!(~D[2025-02-21], ~T[23:30:00], "America/Montreal"),
+          color: "#abc321"
+        )
       ])
 
     state = %CalendarServer{args: args, calendar: calendar}

@@ -71,7 +71,7 @@ defmodule CaltarWeb do
 
   def view_helpers do
     quote do
-      import CaltarWeb.Gettext
+      use Gettext, backend: CaltarWeb.Gettext
       alias CaltarWeb.Html
       alias CaltarWeb.Components
       unquote(verified_routes())

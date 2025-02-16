@@ -43,12 +43,14 @@ defmodule CaltarWeb.Components.Calendar do
     """
   end
 
+  @max_visible_events 3
   defp day(%{calendar: calendar, day: day} = assigns) do
     assigns =
       assigns
       |> assign(:current_day?, Calendar.current_day?(calendar, day))
       |> assign(:current_month?, Calendar.current_month?(calendar, day))
       |> assign(:events, Calendar.events_for_date(calendar, day))
+      |> assign(:max_visible_events, @max_visible_events)
 
     ~H"""
       <div class={Html.class("flex flex-col flex-1 border m-0.5 rounded-sm", [{not @current_month?, "opacity-50"}, {@current_day?, "text-pink-500 border-pink-600"}])}>
@@ -56,18 +58,26 @@ defmodule CaltarWeb.Components.Calendar do
           {@day.day}
         </div>
         <div class="p-1 h-32">
-          <%= for event <- @events do %>
-            <.event event={event} />
+          <%= with {visible, overflow} <- Enum.split(@events, @max_visible_events) do %>
+            <%= for event <- visible do %>
+              <.event event={event} />
+            <% end %>
+            <%= if Enum.any?(overflow) do %>
+              <%= gettext("+%{count} more", count: length(overflow)) %>
+            <% end %>
           <% end %>
         </div>
       </div>
     """
   end
 
-  defp event(assigns) do
+  defp event(%{event: %Calendar.Event{starts_at: starts_at}} = assigns) do
+    assigns = assign(assigns, :start_time, Caltar.Date.to_string!(starts_at, format: "H:mm"))
+
     ~H"""
-      <div class="p-0.5 rounded-sm text-sm text-gray-800" style={"background-color: #{@event.color};"}>
-        <%= @event.title %>
+      <div class="mb-1 flex rounded-sm text-sm text-gray-800" style={"background-color: #{@event.color};"}>
+        <div class="py-0.5 px-1"><%= String.pad_leading(@start_time, 5, "0") %></div>
+        <div class="p-0.5 truncate "><%= @event.title %></div>
       </div>
     """
   end
