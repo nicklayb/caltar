@@ -21,6 +21,7 @@ defmodule Caltar.MixProject do
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(:dev), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
   defp deps do
@@ -36,7 +37,7 @@ defmodule Caltar.MixProject do
       {:phoenix_live_view, "~> 1.0.4"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:bandit, "~> 1.5"},
-      {:box, git: "https://github.com/nicklayb/box_ex.git", tag: "0.4.1"},
+      {:box, git: "https://github.com/nicklayb/box_ex.git", tag: "0.4.2"},
       {:ex_cldr_dates_times, "~> 2.0"},
       {:ex_cldr_numbers, "~> 2.33"},
       {:tz, "~> 0.28"}
