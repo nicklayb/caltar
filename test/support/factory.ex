@@ -12,6 +12,9 @@ defmodule Caltar.Factory do
   def generate(:base64, options), do: generate(Box.Generator.Base64, options)
   def generate(:hex, options), do: generate(Box.Generator.Hexadecimal, options)
 
+  def generate({:color, color_type}, options),
+    do: generate(Box.Generator.Color, Keyword.put(options, :type, color_type))
+
   def generate(generator, options) do
     Box.Generator.generate(generator, options)
   end
