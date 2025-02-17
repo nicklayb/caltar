@@ -47,7 +47,10 @@ defmodule Caltar.Calendar.Builder do
   defp build_month(_, _, acc), do: acc
 
   defp pad_start(%{days: [start | _]} = acc) do
-    weekday = next_weekday(Caltar.Date.weekday(start))
+    weekday =
+      start
+      |> Caltar.Date.weekday()
+      |> next_weekday()
 
     if weekday > 1 do
       range = 1..(weekday - 1)
