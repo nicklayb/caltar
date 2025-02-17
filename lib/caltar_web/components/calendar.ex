@@ -53,8 +53,8 @@ defmodule CaltarWeb.Components.Calendar do
       |> assign(:max_visible_events, @max_visible_events)
 
     ~H"""
-      <div class={Html.class("flex flex-col overflow-hidden flex-1 border m-0.5 rounded-sm", [{not @current_month?, "opacity-50"}, {@current_day?, "text-pink-500 border-pink-600"}])}>
-        <div class={Html.class("pl-2 py-1 bg-gray-800 text-white text-sm border-b", [{@current_day?, "bg-pink-500 text-white border-b-pink-500"}])}>
+      <div class={Html.class("flex flex-col overflow-hidden flex-1 border m-0.5 rounded-sm", [{not @current_month?, "opacity-50"}, {@current_day?, "font-bold border-pink-600", "border-gray-700"}])}>
+        <div class={Html.class("pl-2 py-1 bg-gray-800 text-white text-sm", [{@current_day?, "bg-pink-700 text-white border-b-pink-700"}])}>
           {@day.day}
         </div>
         <div class="p-1 h-32">
@@ -63,7 +63,7 @@ defmodule CaltarWeb.Components.Calendar do
               <.event event={event} />
             <% end %>
             <%= if Enum.any?(overflow) do %>
-              <%= gettext("+%{count} more", count: length(overflow)) %>
+              <div class="text-right pr-2"><%= gettext("+%{count} more", count: length(overflow)) %></div>
             <% end %>
           <% end %>
         </div>
@@ -77,7 +77,7 @@ defmodule CaltarWeb.Components.Calendar do
     ~H"""
       <div class="mb-1 flex overflow-hidden rounded-sm text-sm text-gray-800">
         <div class="py-0.5 px-1 bg-white font-bold" style={"background-color: #{@event.color};"}><%= String.pad_leading(@start_time, 5, "0") %></div>
-        <div class="p-0.5 pl-1 truncate line-clamp-1 w-full brightness-125" style={"background-color: #{@event.color};"}><%= @event.title %></div>
+        <div class="p-0.5 pl-1 line-clamp-1 w-full brightness-125" style={"background-color: #{@event.color};"}><%= @event.title %></div>
       </div>
     """
   end

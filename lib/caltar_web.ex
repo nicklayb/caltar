@@ -22,8 +22,6 @@ defmodule CaltarWeb do
         formats: [:html, :json],
         layouts: [html: CaltarWeb.Layouts]
 
-      use Gettext, backend: CaltarWeb.Gettext
-
       import Plug.Conn
 
       unquote(view_helpers())
