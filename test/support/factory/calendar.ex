@@ -10,7 +10,7 @@ defmodule Caltar.Factory.Calendar do
           title: "Music Show",
           starts_at: ~U[2025-01-05 20:00:00Z],
           ends_at: ~U[2025-01-05 23:00:00Z],
-          color: generate(:hex, length: 6)
+          color: "#" <> generate(:hex, length: 6)
         }
       end
     end
