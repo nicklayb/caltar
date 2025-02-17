@@ -1,5 +1,4 @@
 defmodule CaltarWeb.Main.Live do
-  alias Caltar.Calendar
   use CaltarWeb, :live_view
 
   def mount(_params, _session, socket) do

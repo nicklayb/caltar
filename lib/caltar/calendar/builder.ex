@@ -10,7 +10,7 @@ defmodule Caltar.Calendar.Builder do
   @doc """
   Build the month calendar for the given date. It also pads days before and after the given month to give a full 7-day per week list of list of date.
   """
-  @spec build_month(DateTime.t()) :: %{
+  @spec build_month(DateTime.t() | Date.t()) :: %{
           days: calendar(),
           start_date: date(),
           end_date: date()
