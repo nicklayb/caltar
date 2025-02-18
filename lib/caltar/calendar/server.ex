@@ -26,18 +26,7 @@ defmodule Caltar.Calendar.Server do
     {:noreply, reset_state(state)}
   end
 
-  def handle_call(:get_calendar, _, %{calendar: calendar} = state) do
-    {:reply, calendar, state}
-  end
-
-  def handle_info(
-        %Box.PubSub.Message{
-          topic: "calendar",
-          message: :events_updated,
-          params: {provider, events}
-        },
-        state
-      ) do
+  def handle_cast({:updated, provider, events}, state) do
     state =
       map_calendar(state, fn calendar ->
         calendar
@@ -46,6 +35,10 @@ defmodule Caltar.Calendar.Server do
       end)
 
     {:noreply, state}
+  end
+
+  def handle_call(:get_calendar, _, %{calendar: calendar} = state) do
+    {:reply, calendar, state}
   end
 
   defp map_calendar(%CalendarServer{calendar: calendar} = state, function) do

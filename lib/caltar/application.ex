@@ -1,6 +1,8 @@
 defmodule Caltar.Application do
   use Application
 
+  alias Caltar.Calendar.Poller
+
   @impl true
   def start(_type, _args) do
     children = [
@@ -8,7 +10,20 @@ defmodule Caltar.Application do
       {Ecto.Migrator, repos: ecto_repos()},
       Caltar.PubSub,
       Caltar.Clock,
-      {Caltar.Calendar.StaticSupervisor, name: Caltar.Calendar.Main, providers: []},
+      {Caltar.Calendar.StaticSupervisor,
+       name: Caltar.Calendar.Main,
+       providers: [
+         {Poller,
+          provider:
+            {Caltar.Calendar.Provider.Birthdays,
+             birthdays: [
+               {"Adrien", ~D[2024-06-08]},
+               {"Nicolas", ~D[1993-03-20]},
+               {"Eve-Lynn", ~D[1996-07-03]},
+               {"Alexis", ~D[2013-02-21]}
+             ]},
+          every: :never}
+       ]},
       CaltarWeb.Endpoint
     ]
 

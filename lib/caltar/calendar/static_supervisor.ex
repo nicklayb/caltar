@@ -1,4 +1,5 @@
 defmodule Caltar.Calendar.StaticSupervisor do
+  alias Caltar.Calendar
   use Supervisor
 
   def start_link(args) do
@@ -6,15 +7,24 @@ defmodule Caltar.Calendar.StaticSupervisor do
   end
 
   def init(args) do
-    name = Keyword.fetch!(args, :name)
-
     providers =
       args
       |> Keyword.get(:providers, [])
-      |> Enum.map(&{CalendarPoller, provider: &1, supervisor_name: name})
+      |> Enum.map(&add_option(&1, :supervisor_pid, self()))
 
-    children = []
+    children = [
+      Calendar.Server
+      | providers
+    ]
 
-    Supervisor.init(children, strategy: :one_for_one)
+    Supervisor.init(children, strategy: :one_for_all)
+  end
+
+  defp add_option({module, options}, key, value) do
+    {module, Keyword.put(options, key, value)}
+  end
+
+  defp add_option(module, key, value) do
+    add_option({module, []}, key, value)
   end
 end

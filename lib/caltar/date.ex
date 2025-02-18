@@ -32,6 +32,10 @@ defmodule Caltar.Date do
     )
   end
 
+  def date_time_from_date(%Date{} = date, %Time{} = time \\ Time.new!(0, 0, 0)) do
+    DateTime.new!(date, time, timezone())
+  end
+
   @week [
     ~D[2025-01-05],
     ~D[2025-01-06],
