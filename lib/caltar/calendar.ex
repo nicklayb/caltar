@@ -2,7 +2,8 @@ defmodule Caltar.Calendar do
   alias Caltar.Calendar.Builder, as: CalendarBuilder
   alias Caltar.Calendar.Event, as: CalendarEvent
   alias Caltar.Calendar
-  defstruct [:start_date, :end_date, :current_time, :dates, events: %{}]
+
+  defstruct [:start_date, :end_date, :current_time, :dates, events: %{}, markers: %{}]
 
   def build(date_time) do
     %{days: days, start_date: start_date, end_date: end_date} =
@@ -12,7 +13,9 @@ defmodule Caltar.Calendar do
   end
 
   def events_for_date(%Calendar{events: events}, date) do
-    Map.get(events, date, [])
+    events
+    |> Map.get(date, [])
+    |> Enum.sort(Calendar.Event)
   end
 
   def put_events(%Calendar{} = calendar, events) do

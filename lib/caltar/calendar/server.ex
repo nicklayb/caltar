@@ -31,7 +31,11 @@ defmodule Caltar.Calendar.Server do
   end
 
   def handle_info(
-        %Box.PubSub.Message{topic: "calendar", message: :updated, params: {provider, events}},
+        %Box.PubSub.Message{
+          topic: "calendar",
+          message: :events_updated,
+          params: {provider, events}
+        },
         state
       ) do
     state =

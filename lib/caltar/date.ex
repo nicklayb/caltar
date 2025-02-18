@@ -26,7 +26,10 @@ defmodule Caltar.Date do
   end
 
   def to_string!(date, options) do
-    Caltar.Cldr.DateTime.to_string!(date, Keyword.put_new(options, :locale, locale()))
+    Caltar.Cldr.DateTime.to_string!(
+      date,
+      Keyword.put_new(options, :locale, Caltar.Application.locale())
+    )
   end
 
   @week [
@@ -52,9 +55,5 @@ defmodule Caltar.Date do
     :caltar
     |> Application.fetch_env!(Caltar.Date)
     |> Keyword.get(:timezone, @utc)
-  end
-
-  defp locale do
-    Application.fetch_env!(:ex_cldr, :default_locale)
   end
 end

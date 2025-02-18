@@ -15,6 +15,9 @@ defmodule CaltarWeb.Router do
 
   scope("/", CaltarWeb) do
     pipe_through([:browser])
-    live("/", Main.Live)
+
+    live_session :default, on_mount: [CaltarWeb.Hooks.PutLocale] do
+      live("/", Main.Live)
+    end
   end
 end
