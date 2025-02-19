@@ -114,13 +114,7 @@ defmodule Caltar.Calendar.Poller do
   end
 
   defp calendar_server(%Poller{supervisor_pid: supervisor_pid}) do
-    supervisor_pid
-    |> Supervisor.which_children()
-    |> IO.inspect(label: "children")
-    |> Enum.find_value(fn
-      {_, pid, _, [Caltar.Calendar.Server]} -> pid
-      _ -> nil
-    end)
+    Caltar.Calendar.StorageSupervisor.get_calendar_server(supervisor_pid)
   end
 
   defp now, do: Caltar.Date.now!()

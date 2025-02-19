@@ -37,12 +37,15 @@ defmodule Caltar.MixProject do
       {:phoenix_live_view, "~> 1.0.4"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:bandit, "~> 1.5"},
-      {:box, git: "https://github.com/nicklayb/box_ex.git", tag: "0.5.0"},
+      {:box, git: "https://github.com/nicklayb/box_ex.git", tag: "0.6.0"},
       {:ex_cldr_dates_times, "~> 2.0"},
       {:ex_cldr_numbers, "~> 2.33"},
       {:tz, "~> 0.28"},
       {:icalendar, "~> 1.1.0"},
-      {:polymorphic_embed, "~> 5.0.0"}
+      # Update once the live view > 1.0 is released
+      {:polymorphic_embed,
+       git: "git@github.com:nicklayb/polymorphic_embed.git",
+       ref: "e84dea09575afff8710bab7ada75e1262ddeb082"}
     ]
   end
 

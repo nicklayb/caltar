@@ -7,7 +7,7 @@ defmodule Caltar.Calendar.Server do
 
   @name Caltar.Calendar.Server
   def start_link(args) do
-    GenServer.start_link(__MODULE__, args, name: Keyword.get(args, :name, @name))
+    GenServer.start_link(__MODULE__, args)
   end
 
   def init(args) do
@@ -16,6 +16,12 @@ defmodule Caltar.Calendar.Server do
 
   def get_calendar(name \\ @name) do
     GenServer.call(name, :get_calendar)
+  end
+
+  def get_calendar_by_slug(slug) do
+    slug
+    |> Caltar.Calendar.StorageSupervisor.get_calendar_server()
+    |> get_calendar()
   end
 
   def reset(name \\ @name) do

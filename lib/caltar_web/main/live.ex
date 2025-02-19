@@ -1,11 +1,13 @@
 defmodule CaltarWeb.Main.Live do
   use CaltarWeb, :live_view
 
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
+    calendar_slug = Map.get(params, "calendar", "main")
+
     socket =
       socket
       |> assign(:clock, Caltar.Date.now!())
-      |> assign(:calendar, Caltar.Calendar.Server.get_calendar())
+      |> assign(:calendar, Caltar.Calendar.Server.get_calendar_by_slug(calendar_slug))
       |> subscribe("clock:second")
       |> subscribe("calendar")
 

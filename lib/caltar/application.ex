@@ -24,6 +24,7 @@ defmodule Caltar.Application do
              ]},
           every: :never}
        ]},
+      Caltar.Calendar.StorageSupervisor,
       CaltarWeb.Endpoint
     ]
 
