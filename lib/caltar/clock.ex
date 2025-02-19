@@ -3,15 +3,14 @@ defmodule Caltar.Clock do
 
   alias Caltar.Clock
 
-  defstruct [:precision, :time]
+  defstruct [:time]
 
   def start_link(args) do
     GenServer.start_link(Caltar.Clock, args, name: Keyword.get(args, :name, Caltar.Clock))
   end
 
-  def init(args) do
-    precision = Keyword.get(args, :precision, :second)
-    state = tick(%Clock{precision: precision, time: now()})
+  def init(_args) do
+    state = tick(%Clock{time: now()})
     {:ok, state}
   end
 
@@ -33,19 +32,34 @@ defmodule Caltar.Clock do
   defp update_clock(%Clock{} = clock) do
     updated_time = now()
 
-    if time_updated?(clock, updated_time) do
-      Caltar.PubSub.broadcast("clock", {:updated, updated_time})
-      %Clock{clock | time: updated_time}
-    else
-      clock
+    case updated_parts(clock, updated_time) do
+      [] ->
+        clock
+
+      parts ->
+        clock
+        |> put_time(updated_time)
+        |> broadcast_parts_updated(parts)
     end
   end
 
-  defp time_updated?(%Clock{time: current_time, precision: precision}, right) do
-    case precision do
-      :second ->
-        abs(DateTime.diff(current_time, right, :second)) >= 1
-    end
+  defp broadcast_parts_updated(%Clock{time: time} = clock, parts) do
+    Enum.each(parts, fn part ->
+      Caltar.PubSub.broadcast("clock:#{to_string(part)}", {:updated, time})
+    end)
+
+    clock
+  end
+
+  @checked_parts ~w(second minute hour day month year)a
+  defp updated_parts(%Clock{time: current_time}, new_time) do
+    Enum.filter(@checked_parts, fn key ->
+      Map.fetch!(current_time, key) != Map.fetch!(new_time, key)
+    end)
+  end
+
+  defp put_time(%Clock{} = clock, new_time) do
+    %Clock{clock | time: new_time}
   end
 
   defp now, do: Caltar.Date.now!()

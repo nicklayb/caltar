@@ -20,7 +20,7 @@ defmodule Caltar.Application do
                {"Adrien", ~D[2024-06-08]},
                {"Nicolas", ~D[1993-03-20]},
                {"Eve-Lynn", ~D[1996-07-03]},
-               {"Alexis", ~D[2013-02-21]}
+               {"Alexis", ~D[2013-02-22]}
              ]},
           every: :never}
        ]},

@@ -6,14 +6,14 @@ defmodule CaltarWeb.Main.Live do
       socket
       |> assign(:clock, Caltar.Date.now!())
       |> assign(:calendar, Caltar.Calendar.Server.get_calendar())
-      |> subscribe("clock")
+      |> subscribe("clock:second")
       |> subscribe("calendar")
 
     {:ok, socket}
   end
 
   def handle_pubsub(
-        %Box.PubSub.Message{topic: "clock", message: :updated, params: new_clock},
+        %Box.PubSub.Message{topic: "clock:second", message: :updated, params: new_clock},
         socket
       ) do
     socket = assign(socket, :clock, new_clock)

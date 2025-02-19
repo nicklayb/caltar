@@ -16,6 +16,8 @@ defmodule Caltar.Calendar.Event do
     DateTime.compare(left_starts_at, right_starts_at)
   end
 
+  def full_day?(%Event{starts_at: starts_at, ends_at: ends_at}), do: starts_at == ends_at
+
   def to_occurences(%Event{starts_at: starts_at, ends_at: ends_at} = event) do
     base_date = DateTime.to_date(starts_at)
     ends_date = DateTime.to_date(ends_at)

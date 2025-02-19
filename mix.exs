@@ -40,7 +40,9 @@ defmodule Caltar.MixProject do
       {:box, git: "https://github.com/nicklayb/box_ex.git", tag: "0.5.0"},
       {:ex_cldr_dates_times, "~> 2.0"},
       {:ex_cldr_numbers, "~> 2.33"},
-      {:tz, "~> 0.28"}
+      {:tz, "~> 0.28"},
+      {:icalendar, "~> 1.1.0"},
+      {:polymorphic_embed, "~> 5.0.0"}
     ]
   end
 

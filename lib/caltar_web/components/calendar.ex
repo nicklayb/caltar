@@ -71,12 +71,17 @@ defmodule CaltarWeb.Components.Calendar do
     """
   end
 
-  defp event(%{event: %Calendar.Event{starts_at: starts_at}} = assigns) do
-    assigns = assign(assigns, :start_time, Caltar.Date.to_string!(starts_at, format: "H:mm"))
+  defp event(%{event: %Calendar.Event{starts_at: starts_at} = event} = assigns) do
+    assigns =
+      assigns
+      |> assign(:start_time, Caltar.Date.to_string!(starts_at, format: "H:mm"))
+      |> assign(:full_day?, Calendar.Event.full_day?(event))
 
     ~H"""
       <div class="mb-1 flex overflow-hidden rounded-sm text-sm text-gray-800">
-        <div class="py-0.5 px-1 bg-white font-bold" style={"background-color: #{@event.color};"}><%= String.pad_leading(@start_time, 5, "0") %></div>
+        <%= if not @full_day? do %>
+          <div class="py-0.5 px-1 bg-white font-bold" style={"background-color: #{@event.color};"}><%= String.pad_leading(@start_time, 5, "0") %></div>
+        <% end %>
         <div class="p-0.5 pl-1 line-clamp-1 w-full brightness-125" style={"background-color: #{@event.color};"}><%= @event.title %></div>
       </div>
     """
