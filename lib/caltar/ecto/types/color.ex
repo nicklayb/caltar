@@ -23,29 +23,43 @@ defmodule Caltar.Ecto.Types.Color do
   end
 
   def load(raw) when is_map(raw) do
-    raw
-    |> Map.update!("value", &load_value/1)
-    |> Map.update!("format", &String.to_existing_atom/1)
-    |> Enum.reduce(%{}, fn {key, value}, acc ->
-      Map.put(acc, String.to_existing_atom(key), value)
-    end)
-    |> then(&struct!(Color, &1))
-    |> Box.Result.succeed()
+    color = %Color{
+      alpha: get_from_map!(raw, :alpha),
+      format: get_from_map!(raw, :format),
+      value: get_from_map!(raw, :value)
+    }
+
+    {:ok, color}
+  end
+
+  defp get_from_map!(map, field) do
+    map
+    |> Map.fetch!(to_string(field))
+    |> then(&load_value(field, &1))
   end
 
   def dump(%Color{} = color) do
     color
     |> Map.from_struct()
-    |> Map.update!(:value, &dump_value/1)
-    |> Map.update!(:format, &to_string/1)
+    |> Map.update!(:value, &dump_value(:value, &1))
+    |> Map.update!(:format, &dump_value(:format, &1))
     |> Box.Result.succeed()
   end
 
   def dump(_), do: :error
 
-  defp load_value([first, second, third]), do: {first, second, third}
+  defp load_value(:value, [first, second, third]), do: {first, second, third}
 
-  defp dump_value({first, second, third}), do: [first, second, third]
+  defp load_value(:format, "hsl"), do: :hsl
+  defp load_value(:format, "rgb"), do: :rgb
+
+  defp load_value(_, value), do: value
+
+  defp dump_value(:value, {first, second, third}), do: [first, second, third]
+
+  defp dump_value(:format, format), do: to_string(format)
+
+  defp dump_value(_, value), do: value
 end
 
 defimpl Phoenix.HTML.Safe, for: Box.Color do
