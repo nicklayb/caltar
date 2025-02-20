@@ -8,7 +8,7 @@ defmodule Caltar.Storage.Provider do
   alias Caltar.Storage.Provider
 
   schema("providers") do
-    field(:color, :string)
+    field(:color, Caltar.Ecto.Types.Color)
     field(:every, :integer)
 
     belongs_to(:calendar, Calendar)

@@ -49,7 +49,8 @@ defmodule Caltar.Storage.Configuration.Birthdays do
         {Poller, :start_link,
          [
            [
-             provider: {Caltar.Calendar.Provider.Birthdays, birthdays: birthdays} |> IO.inspect(),
+             id: id,
+             provider: {Caltar.Calendar.Provider.Birthdays, birthdays: birthdays},
              color: color,
              supervisor_pid: supervisor_pid,
              every: every || :never

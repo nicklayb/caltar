@@ -80,9 +80,9 @@ defmodule CaltarWeb.Components.Calendar do
     ~H"""
       <div class="mb-1 flex overflow-hidden rounded-sm text-sm text-gray-800">
         <%= if not @full_day? do %>
-          <div class="py-0.5 px-1 bg-white font-bold" style={"background-color: ##{@event.color};"}><%= String.pad_leading(@start_time, 5, "0") %></div>
+          <div class="py-0.5 px-1 bg-white font-bold" style={"background-color: #{@event.color};"}><%= String.pad_leading(@start_time, 5, "0") %></div>
         <% end %>
-        <div class="p-0.5 pl-1 line-clamp-1 w-full brightness-125" style={"background-color: ##{@event.color};"}><%= @event.title %></div>
+        <div class="p-0.5 pl-1 line-clamp-1 w-full brightness-125" style={"background-color: #{@event.color};"}><%= @event.title %></div>
       </div>
     """
   end

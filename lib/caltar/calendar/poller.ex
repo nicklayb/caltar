@@ -13,24 +13,31 @@ defmodule Caltar.Calendar.Poller do
   end
 
   def init(args) do
-    {:ok, init_state(args)}
+    state = init_state(args)
+    log(:info, state, "started")
+    {:ok, state}
   end
 
   def handle_info(:poll, %Poller{} = poller) do
     state =
       case poll(poller) do
         {:update, new_state, events} ->
+          log(:info, poller, "updated with #{length(events)} events")
+
           poller
           |> put_state(new_state)
           |> push_events(events)
           |> schedule_poll()
 
         {:update, new_state} ->
+          log(:info, poller, "no events")
+
           poller
           |> put_state(new_state)
           |> schedule_poll()
 
         :nothing ->
+          log(:info, poller, "no updates")
           poller
       end
 
@@ -38,12 +45,14 @@ defmodule Caltar.Calendar.Poller do
   end
 
   defp poll(%Poller{provider: {provider, options}, state: state} = poller) do
+    log(:info, poller, "polling...")
+
     case provider.poll(now(), state, options) do
       {:ok, new_state} ->
         update_state(poller, new_state)
 
       {:error, error} ->
-        Logger.error("[#{inspect(__MODULE__)}] [#{inspect(provider)}] #{inspect(error)}")
+        log(:error, poller, inspect(error))
         :nothing
     end
   end
@@ -61,7 +70,6 @@ defmodule Caltar.Calendar.Poller do
 
     poller
     |> calendar_server()
-    |> IO.inspect(label: "Calendar")
     |> GenServer.cast({:updated, poller_id, events})
 
     poller
@@ -118,4 +126,22 @@ defmodule Caltar.Calendar.Poller do
   end
 
   defp now, do: Caltar.Date.now!()
+
+  defp log(:info, %Poller{} = state, message) do
+    state
+    |> build_message(message)
+    |> Logger.info()
+  end
+
+  defp log(:error, %Poller{} = state, message) do
+    state
+    |> build_message(message)
+    |> Logger.error()
+  end
+
+  defp build_message(%Poller{} = state, message) do
+    "[#{inspect(__MODULE__)}] [#{inspect_provider(state)}] [#{state.id}] #{message}"
+  end
+
+  defp inspect_provider(%Poller{provider: {provider, _}}), do: inspect(provider)
 end
