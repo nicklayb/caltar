@@ -1,8 +1,6 @@
 defmodule Caltar.Application do
   use Application
 
-  alias Caltar.Calendar.Poller
-
   @impl true
   def start(_type, _args) do
     children = [
