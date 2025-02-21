@@ -1,10 +1,10 @@
 defmodule Caltar.Storage.Calendar do
-  use Caltar, :schema
-
-  require Ecto.Query
+  use Caltar, {:schema, name: :calendar}
 
   alias Caltar.Storage.Calendar
   alias Caltar.Storage.Provider
+
+  @main_slug "main"
 
   schema("calendars") do
     field(:name, :string)
@@ -24,6 +24,8 @@ defmodule Caltar.Storage.Calendar do
       Box.Ecto.Changeset.generate_slug(changeset, source: :name, exists?: &slug_exists?/1)
     end)
   end
+
+  def main_slug, do: @main_slug
 
   defp slug_exists?(test_slug) do
     Calendar

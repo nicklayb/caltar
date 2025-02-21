@@ -1,8 +1,7 @@
 defmodule Caltar.Storage.Provider do
-  use Caltar, :schema
+  use Caltar, {:schema, name: :provider}
 
   import PolymorphicEmbed, only: [polymorphic_embeds_one: 2]
-  require Ecto.Query
 
   alias Caltar.Storage.Calendar
   alias Caltar.Storage.Provider
