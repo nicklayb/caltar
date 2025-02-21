@@ -1,6 +1,8 @@
 defmodule Caltar.Storage.Calendar.Supervisor do
   use Supervisor
 
+  alias Caltar.Storage.Calendar
+  alias Caltar.Repo
   alias Caltar.Storage.Provider
 
   def start_link(args) do
@@ -8,7 +10,10 @@ defmodule Caltar.Storage.Calendar.Supervisor do
   end
 
   def init(args) do
-    providers = Keyword.fetch!(args, :providers)
+    %Calendar{slug: slug, providers: providers} =
+      args
+      |> Keyword.fetch!(:calendar)
+      |> Repo.preload([:providers])
 
     children =
       Enum.map(providers, fn %Provider{configuration: %struct{}} = provider ->
@@ -17,7 +22,8 @@ defmodule Caltar.Storage.Calendar.Supervisor do
 
     Supervisor.init(
       [
-        Caltar.Calendar.Server
+        Caltar.Calendar.Server,
+        {Caltar.Calendar.Controller, slug: slug, supervisor_pid: self()}
         | children
       ],
       strategy: :one_for_one
@@ -25,7 +31,7 @@ defmodule Caltar.Storage.Calendar.Supervisor do
   end
 
   def child_spec(args) do
-    slug = Keyword.fetch!(args, :slug)
+    %Calendar{slug: slug} = Keyword.fetch!(args, :calendar)
 
     default = %{
       id: {__MODULE__, slug},

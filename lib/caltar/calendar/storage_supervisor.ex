@@ -15,12 +15,11 @@ defmodule Caltar.Calendar.StorageSupervisor do
   defp load_children do
     Storage.Calendar
     |> Caltar.Repo.all()
-    |> Caltar.Repo.preload([:providers])
     |> Enum.map(&build_child/1)
   end
 
-  defp build_child(%Storage.Calendar{slug: slug, providers: providers}) do
-    {Caltar.Storage.Calendar.Supervisor, slug: slug, providers: providers}
+  defp build_child(%Storage.Calendar{} = calendar) do
+    {Caltar.Storage.Calendar.Supervisor, calendar: calendar}
   end
 
   def get_supervisor(slug) do

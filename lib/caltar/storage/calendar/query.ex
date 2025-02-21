@@ -6,6 +6,10 @@ defmodule Caltar.Storage.Calendar.Query do
     base_query
   end
 
+  def by_id(query \\ from(), id) do
+    Ecto.Query.where(query, [calendar: calendar], calendar.id == ^id)
+  end
+
   def by_slug(query \\ from(), slug) do
     Ecto.Query.where(query, [calendar: calendar], calendar.slug == ^slug)
   end
