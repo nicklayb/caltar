@@ -1,6 +1,7 @@
 defmodule Caltar.Calendar do
   alias Caltar.Calendar.Builder, as: CalendarBuilder
   alias Caltar.Calendar.Event, as: CalendarEvent
+  alias Caltar.Calendar.Marker, as: CalendarMarker
   alias Caltar.Calendar
 
   defstruct [:start_date, :end_date, :current_time, :dates, events: %{}, markers: %{}]
@@ -27,10 +28,39 @@ defmodule Caltar.Calendar do
     end)
   end
 
+  def put_markers(%Calendar{} = calendar, markers) do
+    Enum.reduce(markers, calendar, fn marker, acc ->
+      case put_marker(acc, marker) do
+        {:ok, acc} -> acc
+        _ -> acc
+      end
+    end)
+  end
+
+  def reject_markers(%Calendar{} = calendar, function) do
+    map_all_markers(calendar, fn date, markers ->
+      Enum.reject(markers, fn marker -> function.(date, marker) end)
+    end)
+  end
+
   def reject_events(%Calendar{} = calendar, function) do
     map_all_events(calendar, fn date, events ->
       Enum.reject(events, fn event -> function.(date, event) end)
     end)
+  end
+
+  def put_marker(%Calendar{} = calendar, %CalendarMarker{} = marker) do
+    if in_calendar?(calendar, marker) do
+      accumulator = remove_old_markers(calendar, marker)
+
+      accumulator
+      |> map_markers(marker.date, fn _date, markers ->
+        [marker | markers]
+      end)
+      |> Box.Result.succeed()
+    else
+      {:error, :not_in_calendar}
+    end
   end
 
   def put_event(%Calendar{} = calendar, %CalendarEvent{} = event) do
@@ -48,6 +78,16 @@ defmodule Caltar.Calendar do
     else
       {:error, :not_in_calendar}
     end
+  end
+
+  defp remove_old_markers(%Calendar{markers: markers} = calendar, %CalendarMarker{id: id}) do
+    new_markers =
+      Enum.reduce(markers, %{}, fn {key, markers}, acc ->
+        updated_markers = Enum.reject(markers, &(&1.id == id))
+        Map.put(acc, key, updated_markers)
+      end)
+
+    %Calendar{calendar | markers: new_markers}
   end
 
   defp remove_old_events(%Calendar{events: events} = calendar, %CalendarEvent{id: id}) do
@@ -83,6 +123,13 @@ defmodule Caltar.Calendar do
       Date.before?(event_end, calendar_end)
   end
 
+  defp in_calendar?(
+         %Calendar{start_date: calendar_start, end_date: calendar_end},
+         %CalendarMarker{date: date}
+       ) do
+    Date.after?(date, calendar_start) and Date.before?(date, calendar_end)
+  end
+
   defp map_events(%Calendar{} = calendar, date, function) do
     map_events(calendar, fn events ->
       previous_events = Map.get(events, date, [])
@@ -99,6 +146,27 @@ defmodule Caltar.Calendar do
     map_events(calendar, fn events ->
       Enum.reduce(events, %{}, fn {date, events}, acc ->
         updated = function.(date, events)
+        Map.put(acc, date, updated)
+      end)
+    end)
+  end
+
+  defp map_markers(%Calendar{} = calendar, date, function) do
+    map_markers(calendar, fn markers ->
+      previous_markers = Map.get(markers, date, [])
+
+      Map.put(markers, date, function.(date, previous_markers))
+    end)
+  end
+
+  defp map_markers(%Calendar{markers: markers} = calendar, function) do
+    %Calendar{calendar | markers: function.(markers)}
+  end
+
+  defp map_all_markers(%Calendar{} = calendar, function) do
+    map_markers(calendar, fn markers ->
+      Enum.reduce(markers, %{}, fn {date, markers}, acc ->
+        updated = function.(date, markers)
         Map.put(acc, date, updated)
       end)
     end)

@@ -53,8 +53,8 @@ defmodule CaltarWeb.Components.Calendar do
       |> assign(:max_visible_events, @max_visible_events)
 
     ~H"""
-      <div class={Html.class("flex flex-col overflow-hidden flex-1 border m-0.5 rounded-sm", [{not @current_month?, "opacity-50"}, {@current_day?, "font-bold border-pink-600", "border-gray-700"}])}>
-        <div class={Html.class("pl-2 py-1 bg-gray-800 text-white text-sm", [{@current_day?, "bg-pink-700 text-white border-b-pink-700"}])}>
+      <div class={Html.class("flex flex-col overflow-hidden flex-1 border m-0.5 rounded-sm", [{not @current_month?, "opacity-50"}, {@current_day?, "border-pink-600", "border-gray-700"}])}>
+        <div class={Html.class("pl-2 py-1 bg-gray-800 text-white text-sm", [{@current_day?, "bg-pink-700 text-white border-b-pink-700 font-bold"}])}>
           {@day.day}
         </div>
         <div class="p-1 h-32">

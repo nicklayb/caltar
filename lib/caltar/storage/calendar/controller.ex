@@ -54,12 +54,6 @@ defmodule Caltar.Calendar.Controller do
     |> Logger.info()
   end
 
-  defp log(:error, %Controller{} = state, message) do
-    state
-    |> build_message(message)
-    |> Logger.error()
-  end
-
   defp build_message(%Controller{} = state, message) do
     "[#{inspect(__MODULE__)}] [#{state.slug}] #{message}"
   end

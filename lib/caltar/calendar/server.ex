@@ -1,4 +1,6 @@
 defmodule Caltar.Calendar.Server do
+  alias Caltar.Calendar.Marker
+  alias Caltar.Calendar.Event
   alias Caltar.Calendar
   alias Caltar.Calendar.Server, as: CalendarServer
   use GenServer
@@ -35,9 +37,17 @@ defmodule Caltar.Calendar.Server do
   def handle_cast({:updated, provider, events}, state) do
     state =
       map_calendar(state, fn calendar ->
+        {markers, events} =
+          Enum.split_with(events, fn
+            %Marker{} -> true
+            %Event{} -> false
+          end)
+
         calendar
         |> Calendar.reject_events(fn _date, event -> event.provider == provider end)
         |> Calendar.put_events(events)
+        |> Calendar.reject_markers(fn _date, marker -> marker.provider == provider end)
+        |> Calendar.put_markers(markers)
       end)
 
     {:noreply, state}
@@ -70,35 +80,6 @@ defmodule Caltar.Calendar.Server do
 
   defp init_state(args) do
     calendar = Calendar.build(Caltar.Date.now!())
-
-    calendar =
-      Calendar.put_events(calendar, [
-        Caltar.Factory.build(:calendar_event,
-          title: "Show de musique de pwell de punk de tassez vous les cassé",
-          starts_at: DateTime.new!(~D[2025-02-14], ~T[09:30:00], "America/Montreal"),
-          ends_at: DateTime.new!(~D[2025-02-15], ~T[15:00:00], "America/Montreal")
-        ),
-        Caltar.Factory.build(:calendar_event,
-          title: "Show de musique",
-          starts_at: DateTime.new!(~D[2025-02-14], ~T[09:30:00], "America/Montreal"),
-          ends_at: DateTime.new!(~D[2025-02-15], ~T[15:00:00], "America/Montreal")
-        ),
-        Caltar.Factory.build(:calendar_event,
-          title: "Show de musique",
-          starts_at: DateTime.new!(~D[2025-02-14], ~T[13:10:00], "America/Montreal"),
-          ends_at: DateTime.new!(~D[2025-02-14], ~T[16:30:00], "America/Montreal")
-        ),
-        Caltar.Factory.build(:calendar_event,
-          title: "Show de musique",
-          starts_at: DateTime.new!(~D[2025-02-14], ~T[08:30:00], "America/Montreal"),
-          ends_at: DateTime.new!(~D[2025-02-14], ~T[10:30:00], "America/Montreal")
-        ),
-        Caltar.Factory.build(:calendar_event,
-          title: "Show de musique",
-          starts_at: DateTime.new!(~D[2025-02-14], ~T[20:30:00], "America/Montreal"),
-          ends_at: DateTime.new!(~D[2025-02-14], ~T[23:30:00], "America/Montreal")
-        )
-      ])
 
     state = %CalendarServer{args: args, calendar: calendar}
 

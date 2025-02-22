@@ -42,6 +42,7 @@ defmodule Caltar.MixProject do
       {:ex_cldr_numbers, "~> 2.33"},
       {:tz, "~> 0.28"},
       {:icalendar, "~> 1.1.0"},
+      {:req, "~> 0.5.8"},
       # Update once the live view > 1.0 is released
       {:polymorphic_embed,
        git: "git@github.com:nicklayb/polymorphic_embed.git",

@@ -1,13 +1,13 @@
 defmodule Caltar.Calendar.Provider.Birthdays do
+  alias Caltar.Storage.Configuration.Birthdays
   alias Caltar.Calendar.Event
   @behaviour Caltar.Calendar.Provider
 
   @impl Caltar.Calendar.Provider
-  def poll(%DateTime{}, _previous_state, options) do
+  def poll(%DateTime{}, _previous_state, %Birthdays{birthdays: birthdays}) do
     now = Caltar.Date.now!()
 
-    options
-    |> Keyword.fetch!(:birthdays)
+    birthdays
     |> Enum.map(fn {name, date} ->
       {name, Map.put(date, :year, now.year)}
     end)

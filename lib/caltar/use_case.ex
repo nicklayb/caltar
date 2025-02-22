@@ -1,9 +1,9 @@
 defmodule Caltar.UseCase do
-  def execute!(module, params, options) do
+  def execute!(module, params, options \\ []) do
     Box.UseCase.execute!(module, params, with_default_options(options))
   end
 
-  def execute(module, params, options) do
+  def execute(module, params, options \\ []) do
     Box.UseCase.execute(module, params, with_default_options(options))
   end
 

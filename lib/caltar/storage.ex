@@ -1,6 +1,13 @@
 defmodule Caltar.Storage do
   alias Caltar.Storage.Calendar
+  alias Caltar.Storage.Provider
   alias Caltar.Repo
+
+  def provider_exists?(provider_id) do
+    provider_id
+    |> Provider.Query.by_id()
+    |> Repo.exists?()
+  end
 
   def calendar_exists?(calendar_id) do
     calendar_id

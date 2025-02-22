@@ -9,6 +9,9 @@ defmodule Caltar.Date do
   def same_month?(%{year: year, month: month}, %{year: year, month: month}), do: true
   def same_month?(_, _), do: false
 
+  def start_of_day?(%{hour: 0, minute: 0, second: 0}), do: true
+  def start_of_day?(_), do: false
+
   def start_of_month(date) do
     %{date | day: 1}
   end
@@ -46,6 +49,10 @@ defmodule Caltar.Date do
     ~D[2025-01-11]
   ]
   def week, do: @week
+
+  def shift_timezone!(%DateTime{} = date_time) do
+    DateTime.shift_zone!(date_time, timezone())
+  end
 
   def now! do
     DateTime.now!(timezone())

@@ -15,7 +15,8 @@ defmodule Caltar.Storage.Provider do
     polymorphic_embeds_one(:configuration,
       types: [
         birthdays: Caltar.Storage.Configuration.Birthdays,
-        icalendar: Caltar.Storage.Configuration.Icalendar
+        icalendar: Caltar.Storage.Configuration.Icalendar,
+        recurring: Caltar.Storage.Configuration.Recurring
       ],
       on_type_not_found: :raise,
       on_replace: :update

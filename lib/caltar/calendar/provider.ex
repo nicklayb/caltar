@@ -1,4 +1,5 @@
 defmodule Caltar.Calendar.Provider do
+  alias Caltar.Calendar.Marker
   alias Caltar.Calendar.Event
 
   @type state :: any()
@@ -8,5 +9,5 @@ defmodule Caltar.Calendar.Provider do
               {:ok, state()} | {:error, any()}
 
   @callback update(state(), state(), options()) ::
-              {:update, state(), [Event.t()]} | {:update, state()} | :nothing
+              {:update, state(), [Event.t() | Marker.t()]} | {:update, state()} | :nothing
 end

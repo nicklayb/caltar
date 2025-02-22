@@ -3,10 +3,11 @@ defmodule Caltar.Calendar.Poller do
 
   require Logger
 
+  alias Caltar.Calendar.Marker
   alias Caltar.Calendar.Event
   alias Caltar.Calendar.Poller
 
-  defstruct [:id, :color, :provider, :supervisor_pid, :every, :state]
+  defstruct [:id, :color, :provider, :supervisor_pid, :every, :state, :update_timer]
 
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
@@ -27,25 +28,22 @@ defmodule Caltar.Calendar.Poller do
           poller
           |> put_state(new_state)
           |> push_events(events)
-          |> schedule_poll()
 
         {:update, new_state} ->
-          log(:info, poller, "no events")
+          log(:debug, poller, "no events")
 
-          poller
-          |> put_state(new_state)
-          |> schedule_poll()
+          put_state(poller, new_state)
 
         :nothing ->
-          log(:info, poller, "no updates")
+          log(:debug, poller, "no updates")
           poller
       end
 
-    {:noreply, state}
+    {:noreply, schedule_poll(state)}
   end
 
   defp poll(%Poller{provider: {provider, options}, state: state} = poller) do
-    log(:info, poller, "polling...")
+    log(:debug, poller, "polling...")
 
     case provider.poll(now(), state, options) do
       {:ok, new_state} ->
@@ -73,6 +71,10 @@ defmodule Caltar.Calendar.Poller do
     |> GenServer.cast({:updated, poller_id, events})
 
     poller
+  end
+
+  defp tag_event(%Poller{id: provider_id}, %Marker{} = marker) do
+    %Marker{marker | provider: provider_id}
   end
 
   defp tag_event(%Poller{color: poller_color, id: provider_id}, %Event{color: color} = event) do
@@ -116,7 +118,8 @@ defmodule Caltar.Calendar.Poller do
     poller
   end
 
-  defp schedule_poll(%Poller{every: every} = poller) do
+  defp schedule_poll(%Poller{every: every, update_timer: update_timer} = poller) do
+    if update_timer, do: Process.cancel_timer(update_timer)
     Process.send_after(self(), :poll, every)
     poller
   end
@@ -126,6 +129,12 @@ defmodule Caltar.Calendar.Poller do
   end
 
   defp now, do: Caltar.Date.now!()
+
+  defp log(:debug, %Poller{} = state, message) do
+    state
+    |> build_message(message)
+    |> Logger.debug()
+  end
 
   defp log(:info, %Poller{} = state, message) do
     state

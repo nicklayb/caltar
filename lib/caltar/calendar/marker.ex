@@ -1,3 +1,8 @@
 defmodule Caltar.Calendar.Marker do
-  defstruct [:icon]
+  defstruct [
+    :id,
+    :icon,
+    :date,
+    :provider
+  ]
 end

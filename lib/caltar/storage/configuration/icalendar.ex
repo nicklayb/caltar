@@ -15,7 +15,7 @@ defmodule Caltar.Storage.Configuration.Icalendar do
     |> Ecto.Changeset.validate_required(@required)
   end
 
-  def poller_spec(%Icalendar{name: name, url: url}) do
-    {Caltar.Calendar.Provider.Icalendar, name: name, url: url}
+  def poller_spec(%Icalendar{} = icalendar) do
+    {Caltar.Calendar.Provider.Icalendar, icalendar}
   end
 end

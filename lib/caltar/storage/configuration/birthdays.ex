@@ -35,7 +35,7 @@ defmodule Caltar.Storage.Configuration.Birthdays do
     end)
   end
 
-  def poller_spec(%Birthdays{birthdays: birthdays}) do
-    {Caltar.Calendar.Provider.Birthdays, birthdays: birthdays}
+  def poller_spec(%Birthdays{} = birthdays) do
+    {Caltar.Calendar.Provider.Birthdays, birthdays}
   end
 end
