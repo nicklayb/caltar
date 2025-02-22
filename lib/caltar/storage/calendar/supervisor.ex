@@ -1,6 +1,7 @@
 defmodule Caltar.Storage.Calendar.Supervisor do
   use Supervisor
 
+  alias Caltar.Calendar.Poller
   alias Caltar.Storage.Calendar
   alias Caltar.Repo
   alias Caltar.Storage.Provider
@@ -16,8 +17,8 @@ defmodule Caltar.Storage.Calendar.Supervisor do
       |> Repo.preload([:providers])
 
     children =
-      Enum.map(providers, fn %Provider{configuration: %struct{}} = provider ->
-        {struct, provider: provider, supervisor_pid: self()}
+      Enum.map(providers, fn %Provider{} = provider ->
+        poller_child_spec(provider, supervisor_pid: self())
       end)
 
     Supervisor.init(
@@ -28,6 +29,33 @@ defmodule Caltar.Storage.Calendar.Supervisor do
       ],
       strategy: :one_for_one
     )
+  end
+
+  def poller_child_spec(
+        %Provider{
+          id: id,
+          configuration: %configuration_struct{} = configuration,
+          every: every,
+          color: color
+        },
+        options
+      ) do
+    supervisor_pid = Keyword.fetch!(options, :supervisor_pid)
+
+    %{
+      id: {__MODULE__, id},
+      start:
+        {Poller, :start_link,
+         [
+           [
+             id: id,
+             provider: configuration_struct.poller_spec(configuration),
+             color: color,
+             supervisor_pid: supervisor_pid,
+             every: every || :never
+           ]
+         ]}
+    }
   end
 
   def child_spec(args) do

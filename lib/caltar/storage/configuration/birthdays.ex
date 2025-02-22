@@ -1,8 +1,6 @@
 defmodule Caltar.Storage.Configuration.Birthdays do
   use Caltar, {:schema, persisted: false}
 
-  alias Caltar.Storage.Provider
-  alias Caltar.Calendar.Poller
   alias Caltar.Storage.Configuration.Birthdays
 
   embedded_schema do
@@ -37,25 +35,7 @@ defmodule Caltar.Storage.Configuration.Birthdays do
     end)
   end
 
-  def child_spec(args) do
-    %Provider{every: every, id: id, color: color, configuration: %Birthdays{birthdays: birthdays}} =
-      Keyword.fetch!(args, :provider)
-
-    supervisor_pid = Keyword.fetch!(args, :supervisor_pid)
-
-    %{
-      id: {__MODULE__, id},
-      start:
-        {Poller, :start_link,
-         [
-           [
-             id: id,
-             provider: {Caltar.Calendar.Provider.Birthdays, birthdays: birthdays},
-             color: color,
-             supervisor_pid: supervisor_pid,
-             every: every || :never
-           ]
-         ]}
-    }
+  def poller_spec(%Birthdays{birthdays: birthdays}) do
+    {Caltar.Calendar.Provider.Birthdays, birthdays: birthdays}
   end
 end

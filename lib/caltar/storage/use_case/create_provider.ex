@@ -24,7 +24,10 @@ defmodule Caltar.Storage.UseCase.CreateProvider do
   @impl Box.UseCase
   def run(multi, params, _) do
     multi
-    |> Ecto.Multi.insert(:provider, Caltar.Storage.Provider.changeset(params))
+    |> Ecto.Multi.insert(
+      :provider,
+      Caltar.Storage.Provider.changeset(params) |> IO.inspect(label: "Changeset")
+    )
     |> Ecto.Multi.run(:preloaded_provider, fn repo, %{provider: provider} ->
       {:ok, repo.preload(provider, [:calendar])}
     end)
