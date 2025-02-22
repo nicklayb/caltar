@@ -5,11 +5,10 @@ defmodule Caltar.Application do
   def start(_type, _args) do
     children = [
       Caltar.Repo,
-      {Ecto.Migrator,
-       repos: Application.fetch_env!(:caltar, :ecto_repos), skip: skip_migrations?()},
+      {Ecto.Migrator, repos: ecto_repos()},
       Caltar.PubSub,
       Caltar.Clock,
-      Caltar.Calendar.Server,
+      Caltar.Calendar.StorageSupervisor,
       CaltarWeb.Endpoint
     ]
 
@@ -23,7 +22,13 @@ defmodule Caltar.Application do
     :ok
   end
 
-  defp skip_migrations?() do
-    System.get_env("RELEASE_NAME") != nil
+  def ecto_repos, do: config(:ecto_repos)
+
+  def release_name, do: config(:release_name)
+
+  def locale, do: config(:locale)
+
+  defp config(key) do
+    Application.fetch_env!(:caltar, key)
   end
 end

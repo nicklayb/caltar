@@ -9,6 +9,9 @@ defmodule Caltar.Date do
   def same_month?(%{year: year, month: month}, %{year: year, month: month}), do: true
   def same_month?(_, _), do: false
 
+  def start_of_day?(%{hour: 0, minute: 0, second: 0}), do: true
+  def start_of_day?(_), do: false
+
   def start_of_month(date) do
     %{date | day: 1}
   end
@@ -26,7 +29,14 @@ defmodule Caltar.Date do
   end
 
   def to_string!(date, options) do
-    Caltar.Cldr.DateTime.to_string!(date, Keyword.put_new(options, :locale, locale()))
+    Caltar.Cldr.DateTime.to_string!(
+      date,
+      Keyword.put_new(options, :locale, Caltar.Application.locale())
+    )
+  end
+
+  def date_time_from_date(%Date{} = date, %Time{} = time \\ Time.new!(0, 0, 0)) do
+    DateTime.new!(date, time, timezone())
   end
 
   @week [
@@ -40,6 +50,10 @@ defmodule Caltar.Date do
   ]
   def week, do: @week
 
+  def shift_timezone!(%DateTime{} = date_time) do
+    DateTime.shift_zone!(date_time, timezone())
+  end
+
   def now! do
     DateTime.now!(timezone())
   end
@@ -52,9 +66,5 @@ defmodule Caltar.Date do
     :caltar
     |> Application.fetch_env!(Caltar.Date)
     |> Keyword.get(:timezone, @utc)
-  end
-
-  defp locale do
-    Application.fetch_env!(:ex_cldr, :default_locale)
   end
 end

@@ -1,5 +1,5 @@
 defmodule Caltar.Cldr do
   use Cldr,
-    locales: ["en", "fr"],
-    providers: [Cldr.Number, Cldr.Calendar, Cldr.DateTime]
+    providers: [Cldr.Number, Cldr.Calendar, Cldr.DateTime],
+    gettext: CaltarWeb.Gettext
 end

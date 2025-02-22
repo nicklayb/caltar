@@ -3,7 +3,9 @@ import Config
 config :caltar,
   environment: config_env(),
   ecto_repos: [Caltar.Repo],
-  generators: [timestamp_type: :utc_datetime, binary_id: true]
+  main_calendar: Caltar.Calendar.Main
+
+config :caltar, Caltar.Repo, migration_primary_key: [name: :id, type: :binary_id]
 
 config :caltar, CaltarWeb.Endpoint,
   adapter: Bandit.PhoenixAdapter,
@@ -13,7 +15,9 @@ config :caltar, CaltarWeb.Endpoint,
   ],
   pubsub_server: Caltar.PubSub
 
-config :ex_cldr, default_backend: Caltar.Cldr
+config :caltar, CaltarWeb.Gettext, default_locale: "en"
+
+config :ex_cldr, default_backend: Caltar.Cldr, default_locale: "en"
 
 config :elixir, :time_zone_database, Tz.TimeZoneDatabase
 

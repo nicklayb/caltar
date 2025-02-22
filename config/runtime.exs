@@ -2,9 +2,9 @@ import Config
 
 locale = Box.Config.get("LOCALE", default: "en")
 
-config :caltar, release_name: Box.Config.get("RELEASE_NAME")
-
-config :caltar, CaltarWeb.Gettext, default_locale: locale
+config :caltar,
+  release_name: Box.Config.get("RELEASE_NAME"),
+  locale: Box.Config.get("LOCALE", default: "en")
 
 config :caltar, Caltar.Date, timezone: Box.Config.get("TZ", default: "Etc/UTC")
 
@@ -24,5 +24,3 @@ config :caltar, CaltarWeb.Endpoint,
   url: [host: app_host.host, scheme: app_host.scheme, port: app_host.port],
   secret_key_base: Box.Config.get!("SECRET_KEY_BASE"),
   live_view: [signing_salt: Box.Config.get!("LIVE_VIEW_SALT")]
-
-config :ex_cldr, default_locale: locale
