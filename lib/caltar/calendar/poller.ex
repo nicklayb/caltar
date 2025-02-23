@@ -53,6 +53,10 @@ defmodule Caltar.Calendar.Poller do
         log(:error, poller, inspect(error))
         :nothing
     end
+  rescue
+    error ->
+      log(:error, poller, "Backing off, got error: " <> inspect(error))
+      {:update, backoff_poll(poller)}
   end
 
   defp update_state(%Poller{provider: {provider, options}, state: old_state}, new_state) do
@@ -118,10 +122,19 @@ defmodule Caltar.Calendar.Poller do
     poller
   end
 
-  defp schedule_poll(%Poller{every: every, update_timer: update_timer} = poller) do
+  defp schedule_poll(%Poller{every: every} = poller) do
+    schedule_poll(poller, every)
+  end
+
+  defp schedule_poll(%Poller{update_timer: update_timer} = poller, timer) do
     if update_timer, do: Process.cancel_timer(update_timer)
-    Process.send_after(self(), :poll, every)
+    Process.send_after(self(), :poll, timer)
     poller
+  end
+
+  @backoff_timer :timer.seconds(10)
+  defp backoff_poll(%Poller{} = poller) do
+    schedule_poll(poller, @backoff_timer)
   end
 
   defp calendar_server(%Poller{supervisor_pid: supervisor_pid}) do
