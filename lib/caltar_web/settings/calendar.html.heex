@@ -1,0 +1,37 @@
+<%= with %Calendar{} = calendar <- @calendar do %>
+  <div class="p-4">
+    <Components.h1>{calendar.name}</Components.h1>
+
+    <Components.h2>{gettext("Providers")}</Components.h2>
+    <Components.list items={calendar.providers}>
+      <:item :let={provider}>
+        <Components.collapsible
+          expanded={MapSet.member?(@expanded, provider.id)}
+          on_click="calendar:expand"
+          expanded_id={provider.id}
+        >
+          <:header>
+            <Components.pastille color={provider.color} />
+            <h3 class="text-2xl py-3 text-gray-200 mx-2">{provider.name}</h3>
+            <div class="flex">
+              <Components.tag>
+                <%= case provider.every do %>
+                  <% nil -> %>
+                    {gettext("never")}
+                  <% every -> %>
+                    {gettext("every %{time}", time: Box.Integer.to_duration_string(0, every))}
+                <% end %>
+              </Components.tag>
+            </div>
+          </:header>
+          <:body>
+            <CalendarProvider.configuration configuration={provider.configuration} />
+          </:body>
+        </Components.collapsible>
+      </:item>
+      <:empty>
+        <Components.empty>{gettext("No providers")}</Components.empty>
+      </:empty>
+    </Components.list>
+  </div>
+<% end %>

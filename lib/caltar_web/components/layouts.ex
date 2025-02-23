@@ -20,7 +20,7 @@ defmodule CaltarWeb.Components.Layouts do
     <%= if @message do %>
       <div class={@class}>
         <%= for message <- List.wrap(@message) do %>
-          <span class=""><%= message %></span>
+          <span class="">{message}</span>
         <% end %>
       </div>
     <% end %>
@@ -28,23 +28,30 @@ defmodule CaltarWeb.Components.Layouts do
   end
 
   def nav_items(assigns) do
-    assigns = assign(assigns, :nav_items, build_nav(assigns))
+    assigns = assign(assigns, :nav_items, build_nav())
 
     ~H"""
     <%= for %{title: section_title, items: items} <- @nav_items do %>
       <span class="text-sm text-gray-600 pl-2 py-0.5 mt-2 uppercase">{section_title}</span>
       <%= for %{title: link_title, href: href, key: key} <- items do %>
-        <a class={Html.class("pl-2 py-2", [{key == @page_key, "bg-gray-700", "hover:bg-gray-700"}])} href={href}>{link_title}</a>
+        <a
+          class={
+            Html.class("pl-2 py-2 mx-2 rounded-md", [
+              {key == @page_key, "bg-gray-700", "hover:bg-gray-800"}
+            ])
+          }
+          href={href}
+        >
+          {link_title}
+        </a>
       <% end %>
     <% end %>
     """
   end
 
-  defp build_nav(assigns) do
+  defp build_nav do
     calendars =
       Enum.map(Storage.get_calendars(), fn %Calendar{slug: slug, name: name} ->
-        key = {:calendar, slug}
-
         %{
           key: {:calendar, slug},
           title: name,
@@ -52,7 +59,7 @@ defmodule CaltarWeb.Components.Layouts do
         }
       end)
 
-    nav_items = [
+    [
       %{
         title: gettext("Settings"),
         items: [

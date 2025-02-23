@@ -4,11 +4,10 @@ defmodule Caltar.Storage.Configuration.Icalendar do
   alias Caltar.Storage.Configuration.Icalendar
 
   embedded_schema do
-    field(:name, :string)
     field(:url, :string)
   end
 
-  @required ~w(name url)a
+  @required ~w(url)a
   def changeset(%Icalendar{} = icalendar \\ %Icalendar{}, params) do
     icalendar
     |> Ecto.Changeset.cast(params, @required)
