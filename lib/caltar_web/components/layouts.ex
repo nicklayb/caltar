@@ -1,4 +1,6 @@
 defmodule CaltarWeb.Components.Layouts do
+  alias Caltar.Storage
+  alias Caltar.Storage.Calendar
   use CaltarWeb, :component
 
   embed_templates("layouts/*")
@@ -23,5 +25,48 @@ defmodule CaltarWeb.Components.Layouts do
       </div>
     <% end %>
     """
+  end
+
+  def nav_items(assigns) do
+    assigns = assign(assigns, :nav_items, build_nav(assigns))
+
+    ~H"""
+    <%= for %{title: section_title, items: items} <- @nav_items do %>
+      <span class="text-sm text-gray-600 pl-2 py-0.5 mt-2 uppercase">{section_title}</span>
+      <%= for %{title: link_title, href: href, key: key} <- items do %>
+        <a class={Html.class("pl-2 py-2", [{key == @page_key, "bg-gray-700", "hover:bg-gray-700"}])} href={href}>{link_title}</a>
+      <% end %>
+    <% end %>
+    """
+  end
+
+  defp build_nav(assigns) do
+    calendars =
+      Enum.map(Storage.get_calendars(), fn %Calendar{slug: slug, name: name} ->
+        key = {:calendar, slug}
+
+        %{
+          key: {:calendar, slug},
+          title: name,
+          href: ~p"/settings/calendars/#{slug}"
+        }
+      end)
+
+    nav_items = [
+      %{
+        title: gettext("Settings"),
+        items: [
+          %{
+            key: :settings,
+            title: gettext("Global"),
+            href: ~p"/settings"
+          }
+        ]
+      },
+      %{
+        title: gettext("Calendars"),
+        items: calendars
+      }
+    ]
   end
 end
