@@ -58,7 +58,7 @@ defmodule CaltarWeb.Components do
             height={30}
           />
         </div>
-        <div class="flex items-center">{render_slot(@header)}</div>
+        <div class="flex items-center w-full">{render_slot(@header)}</div>
       </div>
       <%= if @expanded do %>
         <div class="p-4 border-t border-gray-600">{render_slot(@body)}</div>

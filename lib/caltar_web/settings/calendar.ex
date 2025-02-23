@@ -8,11 +8,17 @@ defmodule CaltarWeb.Settings.Calendar do
   def mount(%{"slug" => slug}, _session, socket) do
     socket =
       socket
+      |> assign(:slug, slug)
       |> assign(:page_key, {:calendar, slug})
       |> assign(:expanded, MapSet.new())
+      |> subscribe("calendar:#{slug}")
       |> load_calendar(slug)
 
     {:ok, socket}
+  end
+
+  defp load_calendar(%{assigns: %{slug: slug}} = socket) do
+    load_calendar(socket, slug)
   end
 
   defp load_calendar(socket, slug) do
@@ -25,12 +31,18 @@ defmodule CaltarWeb.Settings.Calendar do
           nil
       end
 
-    assign(socket, :calendar, calendar)
+    socket
+    |> assign(:calendar, calendar)
   end
 
   def handle_event("calendar:expand", %{"id" => id}, socket) do
     socket = update(socket, :expanded, &Box.MapSet.toggle(&1, id))
 
+    {:noreply, socket}
+  end
+
+  def handle_pubsub(%Box.PubSub.Message{message: :calendar_updated}, socket) do
+    socket = load_calendar(socket)
     {:noreply, socket}
   end
 end

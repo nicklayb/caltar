@@ -2,7 +2,12 @@
   <div class="p-4">
     <Components.h1>{calendar.name}</Components.h1>
 
-    <Components.h2>{gettext("Providers")}</Components.h2>
+    <div class="flex items-center">
+      <Components.h2>{gettext("Providers")}</Components.h2>
+      <button class="ml-4 hover:text-pink-500" phx-click="calendar:new_provider">
+        <Components.Icon.icon icon={:add} width={30} height={30} />
+      </button>
+    </div>
     <Components.list items={calendar.providers}>
       <:item :let={provider}>
         <Components.collapsible
@@ -13,7 +18,7 @@
           <:header>
             <Components.pastille color={provider.color} />
             <h3 class="text-2xl py-3 text-gray-200 mx-2">{provider.name}</h3>
-            <div class="flex">
+            <div class="flex items-center justify-between w-full">
               <Components.tag>
                 <%= case provider.every do %>
                   <% nil -> %>
@@ -22,6 +27,22 @@
                     {gettext("every %{time}", time: Box.Integer.to_duration_string(0, every))}
                 <% end %>
               </Components.tag>
+              <div class="flex justify-end">
+                <button
+                  class="mr-4"
+                  phx-click="calendar:providers:edit"
+                  phx-value-id={provider.id}
+                >
+                  <Components.Icon.icon icon={:pencil} width={20} height={20} />
+                </button>
+                <button
+                  class="mr-4"
+                  phx-click="calendar:providers:delete"
+                  phx-value-id={provider.id}
+                >
+                  <Components.Icon.icon icon={:cross} width={20} height={20} />
+                </button>
+              </div>
             </div>
           </:header>
           <:body>
