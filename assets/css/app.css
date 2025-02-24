@@ -2,4 +2,8 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@theme {
+  --color-salmon: #EEB8CB;
+}
+
 /* This file is for your main application CSS */

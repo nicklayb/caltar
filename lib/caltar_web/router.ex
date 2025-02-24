@@ -18,7 +18,7 @@ defmodule CaltarWeb.Router do
 
     live_session :settings,
       layout: {CaltarWeb.Components.Layouts, :settings},
-      on_mount: [CaltarWeb.Hooks.PutLocale] do
+      on_mount: [CaltarWeb.Hooks.WithModal, CaltarWeb.Hooks.PutLocale] do
       live("/settings", Settings.Global)
       live("/settings/calendars/:slug", Settings.Calendar)
     end

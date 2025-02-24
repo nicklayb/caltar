@@ -63,8 +63,13 @@ defmodule Caltar.Ecto.Types.Color do
 end
 
 defimpl Phoenix.HTML.Safe, for: Box.Color do
-  def to_iodata(%Box.Color{} = color) do
-    Box.Color.to_css(color)
+  def to_iodata(%Box.Color{source: source} = color) do
+    output = Box.Color.to_css(color)
+
+    case source do
+      :hex -> "#" <> output
+      _ -> output
+    end
   end
 end
 

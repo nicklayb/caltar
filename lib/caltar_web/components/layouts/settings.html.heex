@@ -8,4 +8,9 @@
   <div class="w-full overflow-y-auto">
     {@inner_content}
   </div>
+  <%= case @modal do %>
+    <% {_, _} = component -> %>
+      <Components.Modal.render component={component} />
+    <% _ -> %>
+  <% end %>
 </main>

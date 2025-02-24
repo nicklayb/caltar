@@ -1,4 +1,5 @@
 defmodule CaltarWeb.Components do
+  alias Phoenix.LiveView.AsyncResult
   use CaltarWeb, :component
 
   def list(assigns) do
@@ -15,6 +16,8 @@ defmodule CaltarWeb.Components do
     """
   end
 
+  slot(:inner_block)
+
   def empty(assigns) do
     ~H"""
     <div class="w-full py-5 text-center bg-gray-900 text-gray-600">
@@ -24,6 +27,7 @@ defmodule CaltarWeb.Components do
   end
 
   attr(:class, :string, default: "")
+  slot(:inner_block)
 
   def h1(assigns) do
     ~H"""
@@ -32,6 +36,7 @@ defmodule CaltarWeb.Components do
   end
 
   attr(:class, :string, default: "")
+  slot(:inner_block)
 
   def h2(assigns) do
     ~H"""
@@ -40,6 +45,7 @@ defmodule CaltarWeb.Components do
   end
 
   attr(:class, :string, default: "")
+  slot(:inner_block)
 
   def h3(assigns) do
     ~H"""
@@ -68,6 +74,7 @@ defmodule CaltarWeb.Components do
   end
 
   attr(:class, :string, default: "border-indigo-400 bg-indigo-300 text-indigo-800")
+  slot(:inner_block)
 
   def tag(assigns) do
     ~H"""
@@ -78,6 +85,7 @@ defmodule CaltarWeb.Components do
   end
 
   attr(:class, :string, default: "")
+  attr(:color, Box.Color, required: true)
 
   def pastille(assigns) do
     ~H"""
@@ -86,6 +94,37 @@ defmodule CaltarWeb.Components do
       style={"background-color: #{@color}"}
     >
     </div>
+    """
+  end
+
+  attr(:loading, :boolean, required: true)
+  slot(:inner_block)
+
+  def loading(assigns) do
+    ~H"""
+    <%= if @loading do %>
+      <Components.Icon.icon icon={:loading} />
+    <% else %>
+      {render_slot(@inner_block)}
+    <% end %>
+    """
+  end
+
+  attr(:async_result, AsyncResult, required: true)
+
+  slot(:result, required: true)
+  slot(:error, required: true)
+
+  def result(assigns) do
+    ~H"""
+    <.loading loading={@async_result.loading}>
+      <%= case @async_result do %>
+        <% %AsyncResult{ok?: true, result: result} -> %>
+          {render_slot(@result, result)}
+        <% %AsyncResult{ok?: false, failed: failed} -> %>
+          {render_slot(@error, failed)}
+      <% end %>
+    </.loading>
     """
   end
 end

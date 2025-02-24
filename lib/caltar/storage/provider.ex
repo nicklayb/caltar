@@ -11,6 +11,8 @@ defmodule Caltar.Storage.Provider do
     field(:color, Caltar.Ecto.Types.Color)
     field(:every, :integer)
 
+    field(:coniguration_type, :string, virtual: true)
+
     belongs_to(:calendar, Calendar)
 
     polymorphic_embeds_one(:configuration,

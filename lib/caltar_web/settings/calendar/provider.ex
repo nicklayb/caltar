@@ -1,6 +1,4 @@
 defmodule CaltarWeb.Settings.Calendar.Provider do
-  alias Caltar.Storage.Configuration.Birthdays
-  alias Caltar.Storage.Provider
   use CaltarWeb, :component
 
   def configuration(%{configuration: configuration} = assigns) do
@@ -21,7 +19,7 @@ defmodule CaltarWeb.Settings.Calendar.Provider do
   end
 
   @rejected_properties ~w(id)a
-  defp configuration_properties(%struct{} = configuration) do
+  defp configuration_properties(%_{} = configuration) do
     configuration
     |> Map.from_struct()
     |> Enum.reject(fn {key, _} -> key in @rejected_properties end)

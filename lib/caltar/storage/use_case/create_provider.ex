@@ -4,19 +4,32 @@ defmodule Caltar.Storage.UseCase.CreateProvider do
   use Box.UseCase
 
   @impl Box.UseCase
-  def validate(%{calendar_id: calendar_id} = params, _) do
+  def validate(params, options) do
+    case Box.Map.get_first(params, [:calendar_id, :calendar_slug]) do
+      {:calendar_id, calendar_id} ->
+        validate_calendar_exists(params, calendar_id)
+
+      {:calendar_slug, calendar_slug} ->
+        put_calendar_id(params, calendar_slug, options)
+
+      nil ->
+        {:error, :invalid}
+    end
+  end
+
+  defp validate_calendar_exists(params, calendar_id) do
     if Caltar.Storage.calendar_exists?(calendar_id) do
-      params = Map.put_new(params, :color, Caltar.Color.random_pastel())
+      params = Box.Map.put_new(params, :color, Caltar.Color.random_pastel())
       {:ok, params}
     else
       {:error, :not_found}
     end
   end
 
-  def validate(%{calendar_slug: calendar_slug} = params, options) do
-    with {:ok, %Calendar{id: calendar_id}} <- Caltar.Storage.get_calendar_by_slug(calendar_slug) do
+  def put_calendar_id(params, slug, options) do
+    with {:ok, %Calendar{id: calendar_id}} <- Caltar.Storage.get_calendar_by_slug(slug) do
       params
-      |> Map.put(:calendar_id, calendar_id)
+      |> Box.Map.put(:calendar_id, calendar_id)
       |> validate(options)
     end
   end
