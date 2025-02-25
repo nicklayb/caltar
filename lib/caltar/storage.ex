@@ -28,4 +28,10 @@ defmodule Caltar.Storage do
     |> Calendar.Query.by_slug(slug)
     |> Repo.fetch()
   end
+
+  def get_provider(provider_id) do
+    Provider.from()
+    |> Provider.Query.by_id(provider_id)
+    |> Repo.fetch()
+  end
 end

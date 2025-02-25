@@ -5,7 +5,7 @@ defmodule Caltar.Storage.Configuration.Birthdays do
 
   embedded_schema do
     field(:birthdays, {:map, :date})
-    field(:birthdays_input, :string, virtual: true)
+    field(:birthdays_input, :string)
   end
 
   @optional ~w(birthdays)a

@@ -30,12 +30,38 @@ defmodule CaltarWeb.Settings.Calendar do
     {:noreply, socket}
   end
 
+  def handle_event("calendar:provider:delete", %{"id" => id}, socket) do
+    socket =
+      case execute_use_case(socket, Caltar.Storage.UseCase.DeleteProvider, %{provider_id: id}) do
+        {:ok, _} ->
+          send(self(), :close_modal)
+          socket
+
+        _ ->
+          socket
+      end
+
+    {:noreply, socket}
+  end
+
+  def handle_event("calendar:provider:edit", %{"id" => id}, socket) do
+    socket =
+      assign(
+        socket,
+        :modal,
+        {CaltarWeb.Settings.Calendar.CreateOrUpdateProvider,
+         calendar_id: socket.assigns.calendar.result.id, provider_id: id}
+      )
+
+    {:noreply, socket}
+  end
+
   def handle_event("calendar:provider:new", _, socket) do
     socket =
       assign(
         socket,
         :modal,
-        {CaltarWeb.Settings.Calendar.CreateProvider,
+        {CaltarWeb.Settings.Calendar.CreateOrUpdateProvider,
          calendar_id: socket.assigns.calendar.result.id}
       )
 

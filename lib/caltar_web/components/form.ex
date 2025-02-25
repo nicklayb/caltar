@@ -168,6 +168,7 @@ defmodule CaltarWeb.Components.Form do
   attr(:element_class, :string, default: "")
   attr(:class, :string, default: "")
   attr(:rest, :global)
+  attr(:options, :any, required: true)
 
   slot(:label, required: false) do
     attr(:class, :string, required: false)
@@ -186,13 +187,29 @@ defmodule CaltarWeb.Components.Form do
       <select
         id={@field.id}
         name={@field.name}
-        value={@field.value}
         class={Html.class("w-full rounded-sm", @class)}
         {@rest}
       >
-        {render_slot(@inner_block)}
+        <%= for {label, value} <- @options do %>
+          <.select_option label={label} value={value} selected={@field.value} />
+        <% end %>
       </select>
     </.element>
+    """
+  end
+
+  def select_option(assigns) do
+    ~H"""
+    <%= case @value do %>
+      <% list when is_list(list) -> %>
+        <optgroup>
+          <%= for {label, value} <- list do %>
+            <.select_option label={label} value={value} selected={@selected} />
+          <% end %>
+        </optgroup>
+      <% value -> %>
+        <option value={value} selected={value == @selected}>{@label}</option>
+    <% end %>
     """
   end
 
@@ -229,35 +246,6 @@ defmodule CaltarWeb.Components.Form do
         onkeyup="event.preventDefault()"
         {@rest}
       />
-    </.element>
-    """
-  end
-
-  def text_input(%{rest: rest, class: class, form: form, name: name} = assigns) do
-    classes = Html.class(@class, class)
-
-    errors =
-      form
-      |> Map.get(:errors, [])
-      |> Enum.filter(fn {key, _} -> key == name end)
-      |> Keyword.values()
-
-    assigns =
-      rest
-      |> Enum.into([])
-      |> Keyword.put(:class, classes)
-      |> then(&assign(assigns, :attributes, &1))
-      |> then(fn assigns ->
-        update(assigns, :attributes, &Keyword.put(&1, :autocomplete, assigns.autocomplete))
-      end)
-      |> assign(:errors, errors)
-
-    ~H"""
-    <.element name={@name} errors={@errors}>
-      <:label class={slot_attr(@label, :class, "")}>
-        {render_slot(@label)}
-      </:label>
-      {Phoenix.HTML.Form.text_input(@form, @name, @attributes)}
     </.element>
     """
   end

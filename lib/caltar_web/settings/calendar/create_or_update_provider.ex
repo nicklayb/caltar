@@ -1,6 +1,7 @@
-defmodule CaltarWeb.Settings.Calendar.CreateProvider do
+defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
   use CaltarWeb, :live_component
 
+  alias Caltar.Storage
   alias Caltar.Storage.Configuration.Birthdays
   alias Caltar.Storage.Provider
   alias CaltarWeb.Components.Form
@@ -8,10 +9,7 @@ defmodule CaltarWeb.Settings.Calendar.CreateProvider do
 
   @defaults []
   def mount(socket) do
-    socket =
-      socket
-      |> assign(@defaults)
-      |> assign_form()
+    socket = assign(socket, @defaults)
 
     {:ok, socket}
   end
@@ -20,8 +18,28 @@ defmodule CaltarWeb.Settings.Calendar.CreateProvider do
     socket =
       socket
       |> assign(assigns)
+      |> maybe_load_provider()
+      |> assign_form()
 
     {:ok, socket}
+  end
+
+  defp maybe_load_provider(%{assigns: %{provider_id: provider_id}} = socket) do
+    case Storage.get_provider(provider_id) do
+      {:ok, %Provider{} = provider} ->
+        socket
+        |> assign(:provider, provider)
+        |> assign(:title, gettext("Update Provider"))
+        |> assign_form()
+
+      _ ->
+        socket
+    end
+  end
+
+  defp maybe_load_provider(socket) do
+    socket
+    |> assign(:title, gettext("Create Provider"))
   end
 
   defp assign_form(socket, params \\ %{})
@@ -31,11 +49,13 @@ defmodule CaltarWeb.Settings.Calendar.CreateProvider do
   end
 
   defp assign_form(socket, params) do
-    assign_form(
-      socket,
-      Caltar.Storage.Provider.changeset(params |> IO.inspect(label: "Params"))
-      |> IO.inspect(label: "Form")
-    )
+    assign_form(socket, changeset(socket, params))
+  end
+
+  defp changeset(%{assigns: assigns}, params) do
+    assigns
+    |> Map.get(:provider, %Provider{})
+    |> Provider.changeset(params)
   end
 
   def handle_event(
@@ -61,8 +81,10 @@ defmodule CaltarWeb.Settings.Calendar.CreateProvider do
   end
 
   def handle_event("save", %{"provider" => provider_params}, socket) do
+    {use_case, params} = get_use_case(socket, provider_params)
+
     socket =
-      case execute_use_case(socket, Caltar.Storage.UseCase.CreateProvider, provider_params) do
+      case execute_use_case(socket, use_case, params) do
         {:ok, _} ->
           send(self(), :close_modal)
           socket
@@ -74,16 +96,30 @@ defmodule CaltarWeb.Settings.Calendar.CreateProvider do
     {:noreply, socket}
   end
 
+  defp get_use_case(%{assigns: %{provider: %Provider{id: provider_id}}}, params) do
+    {Caltar.Storage.UseCase.UpdateProvider, Box.Map.put(params, :provider_id, provider_id)}
+  end
+
+  defp get_use_case(_socket, params) do
+    {Caltar.Storage.UseCase.CreateProvider, params}
+  end
+
   def render(assigns) do
+    configuration_types =
+      Provider
+      |> PolymorphicEmbed.types(:configuration)
+      |> Enum.map(&{Html.titleize(&1), &1})
+      |> then(&[{gettext("Choose"), ""} | &1])
+
     assigns =
-      assign(assigns, :configuration_types, PolymorphicEmbed.types(Provider, :configuration))
+      assign(assigns, :configuration_types, configuration_types)
 
     ~H"""
     <div>
       <.form for={@form} class="relative" phx-change="change" phx-submit="save" phx-target={@myself}>
         <Modal.modal>
           <:header>
-            {gettext("Create provider")}
+            {@title}
           </:header>
           <:body>
             <Form.hidden
@@ -97,12 +133,8 @@ defmodule CaltarWeb.Settings.Calendar.CreateProvider do
             <Form.color_input field={@form[:color]}>
               <:label>{gettext("Provider color")}</:label>
             </Form.color_input>
-            <Form.select_input field={@form[:configuration_type]}>
+            <Form.select_input field={@form[:configuration_type]} options={@configuration_types}>
               <:label>{gettext("Provider type")}</:label>
-              <option value="">{gettext("Choose")}</option>
-              <%= for embed_type <- @configuration_types do %>
-                <option value={embed_type}>{Html.titleize(embed_type)}</option>
-              <% end %>
             </Form.select_input>
             <PolymorphicEmbed.HTML.Component.polymorphic_embed_inputs_for
               :let={configuration_form}

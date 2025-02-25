@@ -26,7 +26,8 @@ defmodule Caltar.Ecto.Types.Color do
     color = %Color{
       alpha: get_from_map!(raw, :alpha),
       format: get_from_map!(raw, :format),
-      value: get_from_map!(raw, :value)
+      value: get_from_map!(raw, :value),
+      source: get_from_map!(raw, :source)
     }
 
     {:ok, color}
@@ -50,8 +51,9 @@ defmodule Caltar.Ecto.Types.Color do
 
   defp load_value(:value, [first, second, third]), do: {first, second, third}
 
-  defp load_value(:format, "hsl"), do: :hsl
-  defp load_value(:format, "rgb"), do: :rgb
+  defp load_value(_, "hsl"), do: :hsl
+  defp load_value(_, "rgb"), do: :rgb
+  defp load_value(_, "hex"), do: :hex
 
   defp load_value(_, value), do: value
 
@@ -74,7 +76,12 @@ defimpl Phoenix.HTML.Safe, for: Box.Color do
 end
 
 defimpl String.Chars, for: Box.Color do
-  def to_string(%Box.Color{} = color) do
-    Box.Color.to_css(color)
+  def to_string(%Box.Color{source: source} = color) do
+    output = Box.Color.to_css(color)
+
+    case source do
+      :hex -> "#" <> output
+      _ -> output
+    end
   end
 end

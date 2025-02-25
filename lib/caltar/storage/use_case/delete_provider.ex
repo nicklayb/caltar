@@ -4,11 +4,12 @@ defmodule Caltar.Storage.UseCase.DeleteProvider do
   use Box.UseCase
 
   @impl Box.UseCase
-  def validate(%{provider_id: provider_id} = params, _) do
-    if Caltar.Storage.provider_exists?(provider_id) do
-      {:ok, params}
+  def validate(params, _) do
+    with {:provider_id, provider_id} <- Box.Map.get_first(params, [:provider_id]),
+         true <- Caltar.Storage.provider_exists?(provider_id) do
+      {:ok, %{provider_id: provider_id}}
     else
-      {:error, :not_found}
+      _ -> {:error, :not_found}
     end
   end
 
