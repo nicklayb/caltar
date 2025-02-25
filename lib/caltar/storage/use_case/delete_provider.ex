@@ -1,4 +1,4 @@
-defmodule Caltar.Storage.UseCase.UpdateProvider do
+defmodule Caltar.Storage.UseCase.DeleteProvider do
   alias Caltar.Storage.Provider
   alias Caltar.Storage.Calendar
   use Box.UseCase
@@ -7,25 +7,27 @@ defmodule Caltar.Storage.UseCase.UpdateProvider do
   def validate(params, _) do
     with {:provider_id, provider_id} <- Box.Map.get_first(params, [:provider_id]),
          true <- Caltar.Storage.provider_exists?(provider_id) do
-      {:ok, {provider_id, params}}
+      {:ok, %{provider_id: provider_id}}
     else
       _ -> {:error, :not_found}
     end
   end
 
   @impl Box.UseCase
-  def run(multi, {provider_id, params}, _) do
+  def run(multi, params, _) do
     multi
-    |> Ecto.Multi.one(:get_provider, Provider.Query.by_id(provider_id))
-    |> Ecto.Multi.update(
-      :provider,
-      fn %{get_provider: %Provider{} = provider} ->
-        Caltar.Storage.Provider.changeset(provider, params)
-      end
-    )
+    |> Ecto.Multi.one(:provider, query(params))
     |> Ecto.Multi.run(:preloaded_provider, fn repo, %{provider: provider} ->
       {:ok, repo.preload(provider, [:calendar])}
     end)
+    |> Ecto.Multi.delete_all(
+      :delete_provider,
+      query(params)
+    )
+  end
+
+  defp query(%{provider_id: provider_id}) do
+    Provider.Query.by_id(provider_id)
   end
 
   @impl Box.UseCase

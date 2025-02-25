@@ -21,7 +21,7 @@ defmodule Caltar.Storage.Calendar.Supervisor do
 
     Supervisor.init(
       [
-        Caltar.Calendar.Server,
+        {Caltar.Calendar.Server, slug: slug},
         {Caltar.Calendar.Controller, slug: slug, supervisor_pid: self()}
         | children
       ],

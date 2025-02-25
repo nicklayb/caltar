@@ -29,4 +29,16 @@ defmodule CaltarWeb.Html do
   def class(initial, class) when is_binary(class), do: initial <> " " <> class
 
   def class(initial, _), do: initial
+
+  def titleize(atom) when is_atom(atom) do
+    atom
+    |> to_string()
+    |> titleize()
+  end
+
+  def titleize(string) do
+    string
+    |> String.replace("_", " ")
+    |> Macro.camelize()
+  end
 end

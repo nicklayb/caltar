@@ -32,6 +32,8 @@ defmodule Caltar.Storage.Configuration.Recurring do
   @units ~w(day week month year)a
   @string_units Enum.map(@units, &to_string/1)
 
+  def units, do: @units
+
   defp validate_unit(:every_unit, unit) when unit in @string_units do
     []
   end

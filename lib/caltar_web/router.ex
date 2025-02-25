@@ -16,8 +16,18 @@ defmodule CaltarWeb.Router do
   scope("/", CaltarWeb) do
     pipe_through([:browser])
 
-    live_session :default, on_mount: [CaltarWeb.Hooks.PutLocale] do
-      live("/", Main.Live)
+    live_session :settings,
+      layout: {CaltarWeb.Components.Layouts, :settings},
+      on_mount: [CaltarWeb.Hooks.WithModal, CaltarWeb.Hooks.PutLocale] do
+      live("/settings", Settings.Global)
+      live("/settings/calendars/:slug", Settings.Calendar)
+    end
+
+    live_session :default,
+      layout: {CaltarWeb.Components.Layouts, :app},
+      on_mount: [CaltarWeb.Hooks.PutLocale] do
+      live("/", Calendar.Live)
+      live("/:slug", Calendar.Live)
     end
   end
 end

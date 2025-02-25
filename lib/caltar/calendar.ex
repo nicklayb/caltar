@@ -19,6 +19,10 @@ defmodule Caltar.Calendar do
     |> Enum.sort(Calendar.Event)
   end
 
+  def markers_for_date(%Calendar{markers: markers}, date) do
+    Map.get(markers, date, [])
+  end
+
   def put_events(%Calendar{} = calendar, events) do
     Enum.reduce(events, calendar, fn event, acc ->
       case put_event(acc, event) do

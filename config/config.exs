@@ -30,8 +30,18 @@ config :esbuild,
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
+tailwind_path =
+  case System.cmd("whereis", ["tailwindcss"]) do
+    {"tailwindcss: " <> path, 0} ->
+      String.trim(path)
+
+    _ ->
+      nil
+  end
+
 config :tailwind,
-  version: "3.4.3",
+  version: "3.4.17",
+  path: tailwind_path,
   caltar: [
     args: ~w(
       --config=tailwind.config.js

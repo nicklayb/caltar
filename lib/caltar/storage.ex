@@ -3,6 +3,10 @@ defmodule Caltar.Storage do
   alias Caltar.Storage.Provider
   alias Caltar.Repo
 
+  def get_calendars() do
+    Repo.all(Calendar)
+  end
+
   def provider_exists?(provider_id) do
     provider_id
     |> Provider.Query.by_id()
@@ -22,6 +26,12 @@ defmodule Caltar.Storage do
   def get_calendar_by_slug(slug) do
     Calendar.from()
     |> Calendar.Query.by_slug(slug)
+    |> Repo.fetch()
+  end
+
+  def get_provider(provider_id) do
+    Provider.from()
+    |> Provider.Query.by_id(provider_id)
     |> Repo.fetch()
   end
 end

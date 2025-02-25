@@ -18,6 +18,7 @@
               erlang_27
               direnv
               inotify-tools
+              tailwindcss_3
             ];
 
             shellHook = ''

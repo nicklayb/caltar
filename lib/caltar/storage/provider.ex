@@ -7,8 +7,11 @@ defmodule Caltar.Storage.Provider do
   alias Caltar.Storage.Provider
 
   schema("providers") do
+    field(:name, :string)
     field(:color, Caltar.Ecto.Types.Color)
     field(:every, :integer)
+
+    field(:coniguration_type, :string, virtual: true)
 
     belongs_to(:calendar, Calendar)
 
@@ -25,7 +28,7 @@ defmodule Caltar.Storage.Provider do
     timestamps()
   end
 
-  @required ~w(calendar_id color)a
+  @required ~w(calendar_id name color)a
   @optional ~w(every)a
   @castable @required ++ @optional
   def changeset(%Provider{} = provider \\ %Provider{}, params) do

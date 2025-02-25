@@ -1,8 +1,8 @@
-defmodule CaltarWeb.Main.Live do
+defmodule CaltarWeb.Calendar.Live do
   use CaltarWeb, :live_view
 
   def mount(params, _session, socket) do
-    calendar_slug = Map.get(params, "calendar", "main")
+    calendar_slug = Map.get(params, "slug", "main")
 
     socket =
       socket

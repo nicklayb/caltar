@@ -1,0 +1,16 @@
+<main class="w-screen h-screen flex">
+  <nav class="w-72 bg-gray-900 flex flex-col">
+    <span class="text-3xl px-2 pt-4 pb-2 tracking-[0.3em] text-gray-400 uppercase text-center">
+      Caltar
+    </span>
+    <.nav_items page_key={Map.get(assigns, :page_key)} />
+  </nav>
+  <div class="w-full overflow-y-auto">
+    {@inner_content}
+  </div>
+  <%= case @modal do %>
+    <% {_, _} = component -> %>
+      <Components.Modal.render component={component} />
+    <% _ -> %>
+  <% end %>
+</main>
