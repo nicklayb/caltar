@@ -5,7 +5,9 @@ defmodule Caltar.Calendar.Server do
   alias Caltar.Calendar.Server, as: CalendarServer
   use GenServer
 
-  defstruct [:args, :calendar]
+  require Logger
+
+  defstruct [:slug, :args, :calendar]
 
   @name Caltar.Calendar.Server
   def start_link(args) do
@@ -35,6 +37,8 @@ defmodule Caltar.Calendar.Server do
   end
 
   def handle_cast({:updated, provider, events}, state) do
+    log(:debug, state, "updating")
+
     state =
       map_calendar(state, fn calendar ->
         {markers, events} =
@@ -61,6 +65,7 @@ defmodule Caltar.Calendar.Server do
     new_state = %CalendarServer{state | calendar: function.(calendar)}
 
     if updated?(state, new_state) do
+      log(:debug, state, "updated")
       send_update(new_state)
     end
 
@@ -68,20 +73,22 @@ defmodule Caltar.Calendar.Server do
   end
 
   defp send_update(%CalendarServer{calendar: calendar} = state) do
+    log(:debug, state, "broadcasting update")
     Caltar.PubSub.broadcast("calendar", {:updated, calendar})
     state
   end
 
-  defp updated?(%CalendarServer{calendar: %Calendar{events: old_events}}, %{
-         calendar: %Calendar{events: new_events}
+  defp updated?(%CalendarServer{calendar: %Calendar{markers: old_markers, events: old_events}}, %{
+         calendar: %Calendar{markers: new_markers, events: new_events}
        }) do
-    old_events != new_events
+    old_events != new_events or old_markers != new_markers
   end
 
   defp init_state(args) do
     calendar = Calendar.build(Caltar.Date.now!())
+    slug = Keyword.fetch!(args, :slug)
 
-    state = %CalendarServer{args: args, calendar: calendar}
+    state = %CalendarServer{args: args, slug: slug, calendar: calendar}
 
     send_update(state)
   end
@@ -89,4 +96,28 @@ defmodule Caltar.Calendar.Server do
   defp reset_state(%CalendarServer{args: args}) do
     init_state(args)
   end
+
+  defp log(:debug, %CalendarServer{} = state, message) do
+    state
+    |> build_message(message)
+    |> Logger.debug()
+  end
+
+  defp log(:info, %CalendarServer{} = state, message) do
+    state
+    |> build_message(message)
+    |> Logger.info()
+  end
+
+  defp log(:error, %CalendarServer{} = state, message) do
+    state
+    |> build_message(message)
+    |> Logger.error()
+  end
+
+  defp build_message(%CalendarServer{} = state, message) do
+    "[#{inspect(__MODULE__)}] [#{inspect_provider(state)}] #{message}"
+  end
+
+  defp inspect_provider(%CalendarServer{slug: slug}), do: slug
 end

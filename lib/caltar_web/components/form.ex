@@ -174,7 +174,7 @@ defmodule CaltarWeb.Components.Form do
     attr(:class, :string, required: false)
   end
 
-  slot(:inner_block, required: true)
+  slot(:inner_block)
 
   def select_input(assigns) do
     assigns = update(assigns, :class, &Html.class(@class, &1))
@@ -187,7 +187,7 @@ defmodule CaltarWeb.Components.Form do
       <select
         id={@field.id}
         name={@field.name}
-        class={Html.class("w-full rounded-sm", @class)}
+        class={Html.class("w-full rounded-sm py-[0.45em]", @class)}
         {@rest}
       >
         <%= for {label, value} <- @options do %>
