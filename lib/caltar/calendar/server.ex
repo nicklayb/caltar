@@ -72,9 +72,8 @@ defmodule Caltar.Calendar.Server do
     new_state
   end
 
-  defp send_update(%CalendarServer{calendar: calendar} = state) do
-    log(:debug, state, "broadcasting update")
-    Caltar.PubSub.broadcast("calendar", {:updated, calendar})
+  defp send_update(%CalendarServer{slug: slug, calendar: calendar} = state) do
+    Caltar.PubSub.broadcast("calendar:#{slug}", {:updated, calendar})
     state
   end
 

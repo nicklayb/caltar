@@ -68,10 +68,20 @@ defmodule CaltarWeb.Settings.Calendar do
     {:noreply, socket}
   end
 
-  def handle_pubsub(%Box.PubSub.Message{message: :calendar_updated}, socket) do
+  @provider_updated_messages ~w(
+    provider_updated
+    provider_created
+    provider_deleted
+  )a
+  def handle_pubsub(%Box.PubSub.Message{message: provider_updated_message}, socket)
+      when provider_updated_message in @provider_updated_messages do
     socket =
       update_async_result(socket, :calendar, &Repo.preload(&1, [:providers], force: true))
 
+    {:noreply, socket}
+  end
+
+  def handle_pubsub(%Box.PubSub.Message{message: :updated}, socket) do
     {:noreply, socket}
   end
 end

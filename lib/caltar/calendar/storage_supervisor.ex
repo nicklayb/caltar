@@ -31,18 +31,38 @@ defmodule Caltar.Calendar.StorageSupervisor do
     end)
   end
 
-  def get_calendar_server(slug) when is_binary(slug) do
-    slug
-    |> get_supervisor()
-    |> get_calendar_server()
+  def get_calendar_provider_supervisor(slug_or_pid) do
+    get_calendar_process(slug_or_pid, :provider_supervisor)
   end
 
-  def get_calendar_server(supervisor_pid) when is_pid(supervisor_pid) do
+  def get_calendar_controller(slug_or_pid) do
+    get_calendar_process(slug_or_pid, :controller)
+  end
+
+  def get_calendar_server(slug_or_pid) do
+    get_calendar_process(slug_or_pid, :server)
+  end
+
+  defp get_calendar_process(slug, process) when is_binary(slug) do
+    slug
+    |> get_supervisor()
+    |> get_calendar_process(process)
+  end
+
+  defp get_calendar_process(supervisor_pid, process) when is_pid(supervisor_pid) do
     supervisor_pid
     |> Supervisor.which_children()
-    |> Enum.find_value(fn
-      {_, pid, _, [Caltar.Calendar.Server]} -> pid
-      _ -> nil
-    end)
+    |> Enum.find_value(&match_process(&1, process))
   end
+
+  defp match_process({_, pid, _, [Caltar.Calendar.Server]}, :server), do: pid
+  defp match_process({_, pid, _, [Caltar.Storage.Calendar.Controller]}, :controller), do: pid
+
+  defp match_process(
+         {_, pid, _, [DynamicSupervisor]},
+         :provider_supervisor
+       ),
+       do: pid
+
+  defp match_process(_, _), do: nil
 end

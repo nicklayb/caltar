@@ -31,8 +31,8 @@ defmodule Caltar.Storage.UseCase.DeleteProvider do
   end
 
   @impl Box.UseCase
-  def after_run(%{preloaded_provider: %Provider{calendar: %Calendar{slug: slug}}}, _) do
-    Caltar.PubSub.broadcast("calendar:#{slug}", :calendar_updated)
+  def after_run(%{preloaded_provider: %Provider{calendar: %Calendar{slug: slug}} = provider}, _) do
+    Caltar.PubSub.broadcast("calendar:#{slug}", {:provider_deleted, provider})
   end
 
   @impl Box.UseCase
