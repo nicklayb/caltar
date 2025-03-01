@@ -77,14 +77,17 @@ defmodule Caltar.Calendar.Poller do
     poller
   end
 
-  defp tag_event(%Poller{id: provider_id}, %Marker{} = marker) do
-    %Marker{marker | provider: provider_id}
+  defp tag_event(%Poller{id: provider_id, provider: provider}, %Marker{} = marker) do
+    %Marker{marker | provider: provider_id, source: provider}
   end
 
-  defp tag_event(%Poller{color: poller_color, id: provider_id}, %Event{color: color} = event) do
+  defp tag_event(
+         %Poller{color: poller_color, id: provider_id, provider: provider},
+         %Event{color: color} = event
+       ) do
     color = color || poller_color
 
-    %Event{event | provider: provider_id, color: color}
+    %Event{event | provider: provider_id, color: color, source: provider}
   end
 
   defp init_state(args) do

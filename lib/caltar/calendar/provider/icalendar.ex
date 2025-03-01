@@ -1,12 +1,14 @@
 defmodule Caltar.Calendar.Provider.Icalendar do
   @behaviour Caltar.Calendar.Provider
+  use Caltar.Http
 
   alias Caltar.Calendar.Event
+  alias Caltar.Http.Response, as: HttpResponse
   alias Caltar.Storage.Configuration.Icalendar
 
   @impl Caltar.Calendar.Provider
   def poll(%DateTime{} = date_time, _old_state, %Icalendar{url: url}) do
-    with {:ok, %Req.Response{body: body}} <- Req.get(url) do
+    with {:ok, %HttpResponse{body: body}} <- get(url) do
       body
       |> ICalendar.from_ics()
       |> filter_interested_events(date_time)

@@ -1,15 +1,28 @@
 defmodule Caltar.Calendar.Event do
   alias Caltar.Calendar.Event
-  defstruct [:id, :provider, :starts_at, :ends_at, :title, :color, :priority]
+
+  defstruct [
+    :id,
+    :provider,
+    :source,
+    :starts_at,
+    :ends_at,
+    :title,
+    :color,
+    :priority,
+    params: %{}
+  ]
 
   @type t :: %Event{
           id: String.t(),
           provider: tuple() | atom(),
+          source: atom(),
           starts_at: DateTime.t(),
           ends_at: DateTime.t(),
           title: String.t(),
           color: String.t(),
-          priority: integer()
+          priority: integer(),
+          params: map()
         }
 
   def compare(%Event{starts_at: left_starts_at}, %Event{starts_at: right_starts_at}) do

@@ -34,7 +34,7 @@ defmodule Caltar.MixProject do
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       {:gettext, "~> 0.26"},
       {:jason, "~> 1.2"},
-      {:credo, "~> 1.7.11"},
+      {:credo, "~> 1.7.11", runtime: false, only: ~w(dev test)a},
       {:phoenix_live_view, "~> 1.0.4"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:bandit, "~> 1.5"},
