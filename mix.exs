@@ -44,10 +44,7 @@ defmodule Caltar.MixProject do
       {:tz, "~> 0.28"},
       {:icalendar, git: "https://github.com/nicklayb/icalendar", tag: "1.2.1"},
       {:req, "~> 0.5.8"},
-      # Update once the live view > 1.0 is released
-      {:polymorphic_embed,
-       git: "git@github.com:nicklayb/polymorphic_embed.git",
-       ref: "e84dea09575afff8710bab7ada75e1262ddeb082"}
+      {:polymorphic_embed, "~> 5.0.1"}
     ]
   end
 
