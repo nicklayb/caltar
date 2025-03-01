@@ -1,8 +1,8 @@
 defmodule Caltar.Calendar do
+  alias Caltar.Calendar
   alias Caltar.Calendar.Builder, as: CalendarBuilder
   alias Caltar.Calendar.Event, as: CalendarEvent
   alias Caltar.Calendar.Marker, as: CalendarMarker
-  alias Caltar.Calendar
 
   defstruct [:start_date, :end_date, :current_time, :dates, events: %{}, markers: %{}]
 

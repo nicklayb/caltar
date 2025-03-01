@@ -1,12 +1,13 @@
 defmodule Caltar.Calendar.Controller do
   use GenServer
 
-  require Logger
-
+  alias Caltar.Calendar.Controller
   alias Caltar.Calendar.Poller
+  alias Caltar.Calendar.StorageSupervisor
   alias Caltar.Repo
   alias Caltar.Storage.Provider
-  alias Caltar.Calendar.Controller
+
+  require Logger
 
   defstruct [:slug, :supervisor_pid, provider_pids: %{}]
 
@@ -149,11 +150,11 @@ defmodule Caltar.Calendar.Controller do
   end
 
   defp calendar_server(%Controller{supervisor_pid: supervisor_pid}) do
-    Caltar.Calendar.StorageSupervisor.get_calendar_server(supervisor_pid)
+    StorageSupervisor.get_calendar_server(supervisor_pid)
   end
 
   defp provider_supervisor(%Controller{supervisor_pid: supervisor_pid}) do
-    Caltar.Calendar.StorageSupervisor.get_calendar_provider_supervisor(supervisor_pid)
+    StorageSupervisor.get_calendar_provider_supervisor(supervisor_pid)
   end
 
   defp init_state(args) do

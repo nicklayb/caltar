@@ -1,7 +1,7 @@
 defmodule Caltar.Application do
   use Application
 
-  @impl true
+  @impl Application
   def start(_type, _args) do
     children = [
       Caltar.Repo,
@@ -16,7 +16,7 @@ defmodule Caltar.Application do
     Supervisor.start_link(children, opts)
   end
 
-  @impl true
+  @impl Application
   def config_change(changed, _new, removed) do
     CaltarWeb.Endpoint.config_change(changed, removed)
     :ok

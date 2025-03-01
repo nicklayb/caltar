@@ -16,6 +16,8 @@ defmodule Caltar.DataCase do
 
   use ExUnit.CaseTemplate
 
+  alias Ecto.Adapters.SQL.Sandbox, as: EctoSandbox
+
   using do
     quote do
       alias Caltar.Repo
@@ -36,8 +38,8 @@ defmodule Caltar.DataCase do
   Sets up the sandbox based on the test tags.
   """
   def setup_sandbox(tags) do
-    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(Caltar.Repo, shared: not tags[:async])
-    on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
+    pid = EctoSandbox.start_owner!(Caltar.Repo, shared: not tags[:async])
+    on_exit(fn -> EctoSandbox.stop_owner(pid) end)
   end
 
   @doc """
@@ -51,7 +53,9 @@ defmodule Caltar.DataCase do
   def errors_on(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {message, opts} ->
       Regex.replace(~r"%{(\w+)}", message, fn _, key ->
-        opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
+        opts
+        |> Keyword.get(String.to_existing_atom(key), key)
+        |> to_string()
       end)
     end)
   end

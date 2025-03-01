@@ -1,8 +1,8 @@
 defmodule CaltarWeb.Components.Calendar do
   use CaltarWeb, :component
 
-  alias Caltar.Calendar.Marker
   alias Caltar.Calendar
+  alias Caltar.Calendar.Marker
 
   def render(assigns) do
     ~H"""

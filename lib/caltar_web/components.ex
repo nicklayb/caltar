@@ -1,6 +1,7 @@
 defmodule CaltarWeb.Components do
-  alias Phoenix.LiveView.AsyncResult
   use CaltarWeb, :component
+
+  alias Phoenix.LiveView.AsyncResult
 
   def list(assigns) do
     ~H"""

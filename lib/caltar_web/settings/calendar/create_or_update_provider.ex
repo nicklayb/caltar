@@ -1,11 +1,12 @@
 defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
   use CaltarWeb, :live_component
 
-  alias Caltar.Storage.Configuration.Recurring
-  alias Caltar.Storage.Configuration.Icalendar
   alias Caltar.Storage
   alias Caltar.Storage.Configuration.Birthdays
+  alias Caltar.Storage.Configuration.Icalendar
+  alias Caltar.Storage.Configuration.Recurring
   alias Caltar.Storage.Provider
+
   alias CaltarWeb.Components.Form
   alias CaltarWeb.Components.Modal
 

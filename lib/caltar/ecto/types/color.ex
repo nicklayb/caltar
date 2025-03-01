@@ -1,6 +1,7 @@
 defmodule Caltar.Ecto.Types.Color do
-  alias Box.Color
   use Ecto.Type
+
+  alias Box.Color
 
   def type, do: :map
 

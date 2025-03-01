@@ -1,9 +1,9 @@
 defmodule Caltar.Storage do
+  alias Caltar.Repo
   alias Caltar.Storage.Calendar
   alias Caltar.Storage.Provider
-  alias Caltar.Repo
 
-  def get_calendars() do
+  def get_calendars do
     Repo.all(Calendar)
   end
 

@@ -1,9 +1,9 @@
 defmodule Caltar.Calendar.Provider do
-  alias Caltar.Calendar.Marker
   alias Caltar.Calendar.Event
+  alias Caltar.Calendar.Marker
 
   @type state :: any()
-  @type options :: Keyword.t()
+  @type options :: struct()
 
   @callback poll(DateTime.t(), state(), options()) ::
               {:ok, state()} | {:error, any()}

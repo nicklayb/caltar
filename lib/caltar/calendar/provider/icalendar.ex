@@ -1,7 +1,8 @@
 defmodule Caltar.Calendar.Provider.Icalendar do
-  alias Caltar.Storage.Configuration.Icalendar
-  alias Caltar.Calendar.Event
   @behaviour Caltar.Calendar.Provider
+
+  alias Caltar.Calendar.Event
+  alias Caltar.Storage.Configuration.Icalendar
 
   @impl Caltar.Calendar.Provider
   def poll(%DateTime{} = date_time, _old_state, %Icalendar{url: url}) do

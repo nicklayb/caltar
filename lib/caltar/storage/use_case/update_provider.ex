@@ -1,7 +1,8 @@
 defmodule Caltar.Storage.UseCase.UpdateProvider do
-  alias Caltar.Storage.Provider
-  alias Caltar.Storage.Calendar
   use Box.UseCase
+
+  alias Caltar.Storage.Calendar
+  alias Caltar.Storage.Provider
 
   @impl Box.UseCase
   def validate(params, _) do

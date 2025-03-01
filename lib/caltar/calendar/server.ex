@@ -1,9 +1,10 @@
 defmodule Caltar.Calendar.Server do
-  alias Caltar.Calendar.Marker
-  alias Caltar.Calendar.Event
-  alias Caltar.Calendar
-  alias Caltar.Calendar.Server, as: CalendarServer
   use GenServer
+
+  alias Caltar.Calendar
+  alias Caltar.Calendar.Event
+  alias Caltar.Calendar.Marker
+  alias Caltar.Calendar.Server, as: CalendarServer
 
   require Logger
 

@@ -1,11 +1,11 @@
 defmodule Caltar.Calendar.Poller do
   use GenServer
 
-  require Logger
-
-  alias Caltar.Calendar.Marker
   alias Caltar.Calendar.Event
+  alias Caltar.Calendar.Marker
   alias Caltar.Calendar.Poller
+
+  require Logger
 
   defstruct [:id, :color, :provider, :supervisor_pid, :every, :state, :update_timer]
 

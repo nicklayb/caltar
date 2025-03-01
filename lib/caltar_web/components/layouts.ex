@@ -1,7 +1,8 @@
 defmodule CaltarWeb.Components.Layouts do
+  use CaltarWeb, :component
+
   alias Caltar.Storage
   alias Caltar.Storage.Calendar
-  use CaltarWeb, :component
 
   embed_templates("layouts/*")
 
