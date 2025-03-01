@@ -103,18 +103,6 @@ defmodule Caltar.Calendar.Server do
     |> Logger.debug()
   end
 
-  defp log(:info, %CalendarServer{} = state, message) do
-    state
-    |> build_message(message)
-    |> Logger.info()
-  end
-
-  defp log(:error, %CalendarServer{} = state, message) do
-    state
-    |> build_message(message)
-    |> Logger.error()
-  end
-
   defp build_message(%CalendarServer{} = state, message) do
     "[#{inspect(__MODULE__)}] [#{inspect_provider(state)}] #{message}"
   end
