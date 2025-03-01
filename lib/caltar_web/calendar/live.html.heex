@@ -1,7 +1,7 @@
 <div>
   <div class="mb-2">
     <div><Components.Clock.render clock={@clock} /></div>
-    <div class="py-2 text-xl"><%= Caltar.Date.to_string!(@clock, format: "EEEE d LLLL") %></div>
+    <div class="py-2 text-xl">{Caltar.Date.to_string!(@clock, format: "EEEE d LLLL")}</div>
   </div>
   <div class="flex flex-col flex-1 w-full">
     <Components.Calendar.render calendar={@calendar} />

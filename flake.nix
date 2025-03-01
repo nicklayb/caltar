@@ -17,8 +17,10 @@
               elixir
               erlang_27
               direnv
+              nodejs_22
               inotify-tools
               tailwindcss_3
+              just
             ];
 
             shellHook = ''
