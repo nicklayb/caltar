@@ -19,7 +19,8 @@ defmodule Caltar.Storage.Provider do
       types: [
         birthdays: Caltar.Storage.Configuration.Birthdays,
         icalendar: Caltar.Storage.Configuration.Icalendar,
-        recurring: Caltar.Storage.Configuration.Recurring
+        recurring: Caltar.Storage.Configuration.Recurring,
+        sport: Caltar.Storage.Configuration.Sport
       ],
       on_type_not_found: :raise,
       on_replace: :update
@@ -28,6 +29,7 @@ defmodule Caltar.Storage.Provider do
     timestamps()
   end
 
+  @minimum_every_seconds 15
   @required ~w(calendar_id name color)a
   @optional ~w(every)a
   @castable @required ++ @optional
@@ -36,5 +38,6 @@ defmodule Caltar.Storage.Provider do
     |> Ecto.Changeset.cast(params, @castable)
     |> PolymorphicEmbed.cast_polymorphic_embed(:configuration, required: true)
     |> Ecto.Changeset.validate_required(@required)
+    |> Ecto.Changeset.validate_number(:every, greater_than_or_equal_to: @minimum_every_seconds)
   end
 end

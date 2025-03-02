@@ -41,7 +41,9 @@ defmodule Caltar.Storage.Configuration.Sport do
     end
   end
 
-  def poller_spec(%Sport{} = sport) do
-    {Caltar.Calendar.Provider.Sport, sport}
+  def poller_spec(provider) do
+    {Caltar.Calendar.Provider.Sport.Supervisor, provider: provider}
   end
+
+  def providers, do: @provider_mapping
 end

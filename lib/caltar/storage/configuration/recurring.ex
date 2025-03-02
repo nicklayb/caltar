@@ -58,8 +58,8 @@ defmodule Caltar.Storage.Configuration.Recurring do
     end
   end
 
-  def poller_spec(%Recurring{} = recurring) do
-    {Caltar.Calendar.Provider.Recurring, recurring}
+  def poller_spec(_) do
+    {:poller, Caltar.Calendar.Provider.Recurring}
   end
 
   def generate(%Recurring{is_marker: true} = recurring, max_date) do

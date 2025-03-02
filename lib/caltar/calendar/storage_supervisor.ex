@@ -16,6 +16,7 @@ defmodule Caltar.Calendar.StorageSupervisor do
     Storage.Calendar
     |> Caltar.Repo.all()
     |> Enum.map(&build_child/1)
+    |> then(&[{Registry, keys: :unique, name: registry_name()} | &1])
   end
 
   defp build_child(%Storage.Calendar{} = calendar) do
@@ -65,4 +66,26 @@ defmodule Caltar.Calendar.StorageSupervisor do
        do: pid
 
   defp match_process(_, _), do: nil
+
+  def refresh_poller(provider_id) do
+    provider_id
+    |> poller_name()
+    |> GenServer.cast(:poll)
+  end
+
+  def register(key) do
+    Registry.register(registry_name(), key, nil)
+  end
+
+  def poller_name(provider_id), do: registry_name({:poller, provider_id})
+
+  def calendar_name(calendar_id), do: registry_name({:calendar, calendar_id})
+
+  def registry_name(key), do: {:via, Registry, {registry_name(), key}}
+
+  def registry_name, do: Caltar.Calendar.StorageSupervisor.Registry
+
+  def registry_keys do
+    Registry.select(registry_name(), [{{:"$1", :"$2", :"$3"}, [], [{{:"$1", :"$2", :"$3"}}]}])
+  end
 end

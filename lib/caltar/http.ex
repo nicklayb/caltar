@@ -11,6 +11,9 @@ defmodule Caltar.Http do
 
     request =
       quote do
+        alias Caltar.Http.Response, as: HttpResponse
+        alias Caltar.Http.Error, as: HttpError
+
         def request(input_options, other_options \\ []) do
           input_options
           |> Req.new()

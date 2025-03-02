@@ -18,23 +18,36 @@
           >
             <:header>
               <Components.pastille color={provider.color} />
-              <h3 class="text-2xl py-3 text-gray-200 mx-2">{provider.name}</h3>
               <div class="flex items-center justify-between w-full">
-                <Components.tag>
-                  <%= case provider.every do %>
-                    <% nil -> %>
-                      {gettext("never")}
-                    <% every -> %>
-                      {gettext("every %{time}", time: Box.Integer.to_duration_string(0, every))}
-                  <% end %>
-                </Components.tag>
+                <div class="flex items-center">
+                  <h3 class="text-2xl py-3 text-gray-200 mx-2">{provider.name}</h3>
+                  <div>
+                    <%= case provider.every do %>
+                      <% nil -> %>
+                        <Components.tag>
+                          {gettext("never")}
+                        </Components.tag>
+                      <% timer -> %>
+                        <Components.tag class="text-gray-900 bg-yellow-200 border-yellow-500">
+                          {gettext("Every %{value} seconds", value: timer)}
+                        </Components.tag>
+                    <% end %>
+                  </div>
+                </div>
                 <div class="flex justify-end">
+                  <button
+                    class="mr-4"
+                    phx-click="calendar:provider:refresh"
+                    phx-value-id={provider.id}
+                  >
+                    <Components.Icon.icon icon={:sync} width={30} height={30} />
+                  </button>
                   <button
                     class="mr-4"
                     phx-click="calendar:provider:edit"
                     phx-value-id={provider.id}
                   >
-                    <Components.Icon.icon icon={:pencil} width={20} height={20} />
+                    <Components.Icon.icon icon={:pencil} width={25} height={25} />
                   </button>
                   <button
                     class="mr-4"

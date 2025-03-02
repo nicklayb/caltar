@@ -1,6 +1,7 @@
 defmodule CaltarWeb.Components.Calendar do
   use CaltarWeb, :component
 
+  alias Caltar.Calendar.Provider.Sport, as: SportProvider
   alias Caltar.Calendar
   alias Caltar.Calendar.Marker
 
@@ -86,6 +87,63 @@ defmodule CaltarWeb.Components.Calendar do
           <% end %>
         <% end %>
       </div>
+    </div>
+    """
+  end
+
+  defp event(
+         %{
+           event: %Calendar.Event{
+             starts_at: starts_at,
+             title: title,
+             params: %SportProvider.EventParams{
+               progress: %SportProvider.EventParams.Progress{status: status}
+             }
+           }
+         } = assigns
+       ) do
+    assigns =
+      assigns
+      |> assign(:start_time, Caltar.Date.to_string!(starts_at, format: "H:mm"))
+      |> assign(:status, status)
+      |> assign(:title, Regex.replace(~r/[A-Z]+ - /, title, ""))
+
+    ~H"""
+    <div class="mb-1 flex overflow-hidden rounded-sm text-sm text-gray-800">
+      <%= case @status do %>
+        <% :finished -> %>
+          <div
+            class="p-0.5 pl-1 line-clamp-1 w-full brightness-125"
+            style={"background-color: #{@event.color};"}
+          >
+            {@title}
+          </div>
+        <% :pending -> %>
+          <div class="py-0.5 px-1 bg-white font-bold" style={"background-color: #{@event.color};"}>
+            {String.pad_leading(@start_time, 5, "0")}
+          </div>
+          <div
+            class="p-0.5 pl-1 line-clamp-1 w-full brightness-125"
+            style={"background-color: #{@event.color};"}
+          >
+            {@title}
+          </div>
+        <% :in_progress -> %>
+          <div class="flex justify-between w-full">
+            <div class="flex items-center">
+              <img class="w-8" src={@event.params.away.avatar} />
+              <span class="text-white text-lg">{@event.params.away.score}</span>
+            </div>
+            <div class="text-white text-md flex flex-col items-center">
+              <span class="text-xs">{@event.params.progress.clock}</span>
+              <span class="text-xs">{@event.params.progress.clock_status}</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-white text-lg">{@event.params.home.score}</span>
+              <img class="w-8" src={@event.params.home.avatar} />
+            </div>
+          </div>
+      <% end %>
     </div>
     """
   end

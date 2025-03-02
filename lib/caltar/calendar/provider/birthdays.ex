@@ -1,11 +1,14 @@
 defmodule Caltar.Calendar.Provider.Birthdays do
   @behaviour Caltar.Calendar.Provider
 
+  alias Caltar.Storage.Provider
   alias Caltar.Calendar.Event
   alias Caltar.Storage.Configuration.Birthdays
 
   @impl Caltar.Calendar.Provider
-  def poll(%DateTime{}, _previous_state, %Birthdays{birthdays: birthdays}) do
+  def poll(%DateTime{}, _previous_state, %Provider{
+        configuration: %Birthdays{birthdays: birthdays}
+      }) do
     now = Caltar.Date.now!()
 
     birthdays

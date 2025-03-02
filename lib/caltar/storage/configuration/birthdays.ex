@@ -88,7 +88,7 @@ defmodule Caltar.Storage.Configuration.Birthdays do
     end
   end
 
-  def poller_spec(%Birthdays{} = birthdays) do
-    {Caltar.Calendar.Provider.Birthdays, birthdays}
+  def poller_spec(_provider) do
+    {:poller, Caltar.Calendar.Provider.Birthdays}
   end
 end

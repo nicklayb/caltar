@@ -1,16 +1,55 @@
 defmodule Caltar.Calendar.Poller do
   use GenServer
 
+  alias Caltar.Calendar.StorageSupervisor
   alias Caltar.Calendar.Event
   alias Caltar.Calendar.Marker
   alias Caltar.Calendar.Poller
 
   require Logger
 
-  defstruct [:id, :color, :provider, :supervisor_pid, :every, :state, :update_timer]
+  defstruct [
+    :id,
+    :color,
+    :provider,
+    :calendar_id,
+    :every,
+    :state,
+    :update_timer
+  ]
+
+  def child_spec(args) do
+    provider_module = Keyword.fetch!(args, :module)
+    provider_options = Keyword.fetch!(args, :options)
+    id = Keyword.fetch!(args, :id)
+    color = Keyword.get(args, :color, Caltar.Color.random_pastel())
+    calendar_id = Keyword.fetch!(args, :calendar_id)
+    every = Keyword.get(args, :every, :never)
+
+    %{
+      id: {__MODULE__, id},
+      restart: :transient,
+      start:
+        {Poller, :start_link,
+         [
+           [
+             id: id,
+             provider: {provider_module, provider_options},
+             color: color,
+             calendar_id: calendar_id,
+             every: every || :never
+           ]
+         ]}
+    }
+  end
 
   def start_link(args) do
-    GenServer.start_link(__MODULE__, args)
+    name =
+      args
+      |> Keyword.fetch!(:id)
+      |> StorageSupervisor.poller_name()
+
+    GenServer.start_link(__MODULE__, args, name: name)
   end
 
   def init(args) do
@@ -19,27 +58,47 @@ defmodule Caltar.Calendar.Poller do
     {:ok, state}
   end
 
+  def handle_cast(:poll, poller) do
+    send(self(), :poll)
+    {:noreply, poller}
+  end
+
+  def handle_info(:stop, poller) do
+    {:stop, :normal, push_events(poller, [])}
+  end
+
   def handle_info(:poll, %Poller{} = poller) do
     state =
-      case poll(poller) do
-        {:update, new_state, events} ->
-          log(:info, poller, "updated with #{length(events)} events")
+      poller
+      |> poll()
+      |> then(&handle_poll_result(poller, &1))
+      |> schedule_poll()
 
-          poller
-          |> put_state(new_state)
-          |> push_events(events)
+    {:noreply, state}
+  end
 
-        {:update, new_state} ->
-          log(:debug, poller, "no events")
+  defp handle_poll_result(poller, {:update, new_state, events, poller_configuration}) do
+    log(:info, poller, "updated with #{length(events)} events")
 
-          put_state(poller, new_state)
+    poller
+    |> put_state(new_state)
+    |> reconfigure(poller_configuration)
+    |> push_events(events)
+  end
 
-        :nothing ->
-          log(:debug, poller, "no updates")
-          poller
-      end
+  defp handle_poll_result(poller, {:update, new_state, events}) do
+    handle_poll_result(poller, {:update, new_state, events, []})
+  end
 
-    {:noreply, schedule_poll(state)}
+  defp handle_poll_result(poller, {:update, new_state}) do
+    log(:debug, poller, "no events")
+
+    put_state(poller, new_state)
+  end
+
+  defp handle_poll_result(poller, :nothing) do
+    log(:debug, poller, "no updates")
+    poller
   end
 
   defp poll(%Poller{provider: {provider, options}, state: state} = poller) do
@@ -67,51 +126,44 @@ defmodule Caltar.Calendar.Poller do
     %Poller{poller | state: new_state}
   end
 
-  defp push_events(%Poller{id: poller_id} = poller, events) do
+  defp push_events(%Poller{id: poller_id, calendar_id: calendar_id} = poller, events) do
     events = Enum.map(events, &tag_event(poller, &1))
 
-    poller
-    |> calendar_server()
+    calendar_id
+    |> StorageSupervisor.calendar_name()
     |> GenServer.cast({:updated, poller_id, events})
 
     poller
   end
 
-  defp tag_event(%Poller{id: provider_id, provider: provider}, %Marker{} = marker) do
-    %Marker{marker | provider: provider_id, source: provider}
+  defp tag_event(%Poller{id: provider_id, provider: {source, _}}, %Marker{} = marker) do
+    %Marker{marker | provider: provider_id, source: source}
   end
 
   defp tag_event(
-         %Poller{color: poller_color, id: provider_id, provider: provider},
+         %Poller{color: poller_color, id: provider_id, provider: {source, _}},
          %Event{color: color} = event
        ) do
     color = color || poller_color
 
-    %Event{event | provider: provider_id, color: color, source: provider}
+    %Event{event | provider: provider_id, color: color, source: source}
   end
 
   defp init_state(args) do
-    provider =
-      case Keyword.fetch!(args, :provider) do
-        {provider, options} -> {provider, options}
-        provider -> {provider, []}
-      end
+    provider = Keyword.fetch!(args, :provider)
 
-    id = Keyword.get(args, :id, Ecto.UUID.generate())
-    supervisor_pid = Keyword.fetch!(args, :supervisor_pid)
+    id = Keyword.fetch!(args, :id)
+    calendar_id = Keyword.fetch!(args, :calendar_id)
     every = Keyword.fetch!(args, :every)
 
-    color =
-      Keyword.get_lazy(args, :color, fn ->
-        Box.Generator.generate(Box.Generator.Color, type: :hsl, saturation: 17, lightness: 50)
-      end)
+    color = Keyword.fetch!(args, :color)
 
     initial_poller_state = Keyword.get(args, :initial_state)
 
     state = %Poller{
       id: id,
       provider: provider,
-      supervisor_pid: supervisor_pid,
+      calendar_id: calendar_id,
       every: every,
       color: color,
       state: initial_poller_state
@@ -121,12 +173,13 @@ defmodule Caltar.Calendar.Poller do
     state
   end
 
-  defp schedule_poll(%Poller{every: :never} = poller) do
+  defp schedule_poll(%Poller{update_timer: update_timer, every: :never} = poller) do
+    if update_timer, do: Process.cancel_timer(update_timer)
     poller
   end
 
   defp schedule_poll(%Poller{every: every} = poller) do
-    schedule_poll(poller, every)
+    schedule_poll(poller, :timer.seconds(every))
   end
 
   defp schedule_poll(%Poller{update_timer: update_timer} = poller, timer) do
@@ -135,13 +188,27 @@ defmodule Caltar.Calendar.Poller do
     poller
   end
 
+  defp reconfigure(%Poller{} = state, []), do: state
+
+  defp reconfigure(%Poller{every: same} = state, [{:every, same} | rest]) do
+    reconfigure(state, rest)
+  end
+
+  defp reconfigure(%Poller{} = state, [{:every, seconds} | rest]) do
+    log(:debug, state, "reconfigured every #{inspect(state.every)} -> #{inspect(seconds)}")
+
+    %Poller{state | every: seconds || :never}
+    |> schedule_poll()
+    |> reconfigure(rest)
+  end
+
+  defp reconfigure(%Poller{} = state, [_ | rest]) do
+    reconfigure(state, rest)
+  end
+
   @backoff_timer :timer.seconds(10)
   defp backoff_poll(%Poller{} = poller) do
     schedule_poll(poller, @backoff_timer)
-  end
-
-  defp calendar_server(%Poller{supervisor_pid: supervisor_pid}) do
-    Caltar.Calendar.StorageSupervisor.get_calendar_server(supervisor_pid)
   end
 
   defp now, do: Caltar.Date.now!()

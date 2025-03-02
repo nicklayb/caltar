@@ -30,6 +30,11 @@ defmodule CaltarWeb.Settings.Calendar do
     {:noreply, socket}
   end
 
+  def handle_event("calendar:provider:refresh", %{"id" => id}, socket) do
+    Caltar.Calendar.StorageSupervisor.refresh_poller(id)
+    {:noreply, socket}
+  end
+
   def handle_event("calendar:provider:delete", %{"id" => id}, socket) do
     socket =
       case execute_use_case(socket, Caltar.Storage.UseCase.DeleteProvider, %{provider_id: id}) do

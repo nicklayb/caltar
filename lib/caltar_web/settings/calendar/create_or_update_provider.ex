@@ -1,6 +1,8 @@
 defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
   use CaltarWeb, :live_component
 
+  alias Caltar.Calendar.Provider.SportSchedule, as: SportProvider
+  alias Caltar.Storage.Configuration.Sport
   alias Caltar.Storage
   alias Caltar.Storage.Configuration.Birthdays
   alias Caltar.Storage.Configuration.Icalendar
@@ -10,7 +12,8 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
   alias CaltarWeb.Components.Form
   alias CaltarWeb.Components.Modal
 
-  @defaults []
+  @sport_channels Map.keys(Sport.providers())
+  @defaults [teams: [], sports: []]
   def mount(socket) do
     socket = assign(socket, @defaults)
 
@@ -21,6 +24,9 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
     socket =
       socket
       |> assign(assigns)
+      |> assign(:channels, [
+        {gettext("Choose"), ""} | Enum.map(@sport_channels, &{Html.titleize(&1), &1})
+      ])
       |> maybe_load_provider()
 
     {:ok, socket}
@@ -79,6 +85,40 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
     {:noreply, socket}
   end
 
+  def handle_event(
+        "change",
+        %{
+          "_target" => ["provider", "configuration", "sport"],
+          "provider" =>
+            %{"configuration" => %{"provider" => sport_provider, "sport" => sport_slug}} =
+              provider_params
+        },
+        socket
+      ) do
+    socket =
+      socket
+      |> assign_form(provider_params)
+      |> load_teams(sport_provider, sport_slug)
+
+    {:noreply, socket}
+  end
+
+  def handle_event(
+        "change",
+        %{
+          "_target" => ["provider", "configuration", "provider"],
+          "provider" => %{"configuration" => %{"provider" => sport_provider}} = provider_params
+        },
+        socket
+      ) do
+    socket =
+      socket
+      |> assign_form(provider_params)
+      |> load_sports(sport_provider)
+
+    {:noreply, socket}
+  end
+
   def handle_event("change", %{"provider" => provider_params}, socket) do
     socket = assign_form(socket, provider_params)
 
@@ -99,6 +139,37 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
       end
 
     {:noreply, socket}
+  end
+
+  defp load_sports(socket, "") do
+    assign(socket, :sports, [])
+  end
+
+  defp load_sports(socket, sport_provider) do
+    sports =
+      Sport.providers()
+      |> Map.fetch!(sport_provider)
+      |> Enum.map(&{Html.titleize(&1), &1})
+      |> then(&[{gettext("Choose"), ""} | &1])
+
+    assign(socket, :sports, sports)
+  end
+
+  defp load_teams(socket, _, "") do
+    assign(socket, :teams, [])
+  end
+
+  defp load_teams(socket, sport_provider_slug, sport_slug) do
+    teams_options =
+      case SportProvider.request_teams(sport_provider_slug, sport_slug) do
+        {:ok, teams} ->
+          Enum.map(teams, &{&1.full_name, &1.id})
+
+        _ ->
+          []
+      end
+
+    assign(socket, :teams, teams_options)
   end
 
   defp get_use_case(%{assigns: %{provider: %Provider{id: provider_id}}}, params) do
@@ -138,6 +209,9 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
             <Form.color_input field={@form[:color]}>
               <:label>{gettext("Provider color")}</:label>
             </Form.color_input>
+            <Form.text_input field={@form[:every]} placeholder={gettext("Example: 4m for 4 minutes")}>
+              <:label>{gettext("Update every")}</:label>
+            </Form.text_input>
             <Form.select_input field={@form[:configuration_type]} options={@configuration_types}>
               <:label>{gettext("Provider type")}</:label>
             </Form.select_input>
@@ -154,6 +228,9 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
                 form={configuration_form}
                 type={PolymorphicEmbed.HTML.Helpers.source_module(configuration_form)}
                 provider_name={@form[:name].value}
+                channels={@channels}
+                sports={@sports}
+                teams={@teams}
               />
             </PolymorphicEmbed.HTML.Component.polymorphic_embed_inputs_for>
           </:body>
@@ -221,11 +298,7 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
         />
       </div>
     </Form.element>
-    <Form.checkbox
-      field={@form[:is_marker]}
-      value="true"
-      checked={@form[:is_marker].value |> IO.inspect(label: "Checked") == true}
-    >
+    <Form.checkbox field={@form[:is_marker]} value="true" checked={@form[:is_marker].value == true}>
       <:label>{gettext("As Marker?")}</:label>
     </Form.checkbox>
     <%= if @form[:is_marker].value do %>
@@ -243,6 +316,24 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
           <% end %>
         </div>
       </Form.element>
+    <% end %>
+    """
+  end
+
+  defp configuration_form(%{type: Sport} = assigns) do
+    ~H"""
+    <Form.select_input field={@form[:provider]} options={@channels} element_class="w-full">
+      <:label>{gettext("Sport channel")}</:label>
+    </Form.select_input>
+    <%= if Enum.any?(@sports) do %>
+      <Form.select_input field={@form[:sport]} options={@sports} element_class="w-full">
+        <:label>{gettext("Sport")}</:label>
+      </Form.select_input>
+    <% end %>
+    <%= if Enum.any?(@teams) do %>
+      <Form.select_input field={@form[:team_id]} options={@teams} element_class="w-full">
+        <:label>{gettext("Team")}</:label>
+      </Form.select_input>
     <% end %>
     """
   end

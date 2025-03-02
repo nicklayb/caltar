@@ -70,29 +70,20 @@ defmodule Caltar.Calendar.Controller do
     {:noreply, state}
   end
 
-  defp poller_child_spec(
-         %Provider{
-           id: id,
-           configuration: %configuration_struct{} = configuration,
-           every: every,
-           color: color
-         },
-         %Controller{supervisor_pid: supervisor_pid}
-       ) do
-    %{
-      id: {__MODULE__, id},
-      start:
-        {Poller, :start_link,
-         [
-           [
-             id: id,
-             provider: configuration_struct.poller_spec(configuration),
-             color: color,
-             supervisor_pid: supervisor_pid,
-             every: every || :never
-           ]
-         ]}
-    }
+  defp poller_child_spec(%Provider{configuration: %configuration_struct{}} = provider) do
+    case configuration_struct.poller_spec(provider) do
+      {:poller, module} ->
+        {Poller,
+         id: provider.id,
+         module: module,
+         options: provider,
+         color: provider.color,
+         every: provider.every,
+         calendar_id: provider.calendar_id}
+
+      spec ->
+        spec
+    end
   end
 
   defp shutdown_provider(%Controller{provider_pids: provider_pids} = state, provider_id) do
@@ -132,7 +123,7 @@ defmodule Caltar.Calendar.Controller do
          %Controller{provider_pids: provider_ids} = state,
          %Provider{id: provider_id} = provider
        ) do
-    spec = poller_child_spec(provider, state)
+    spec = poller_child_spec(provider)
 
     {:ok, pid} =
       state

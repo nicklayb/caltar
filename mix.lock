@@ -1,7 +1,7 @@
 %{
   "attrs": {:hex, :attrs, "0.6.0", "25d738b47829f964a786ef73897d2550b66f3e7d1d7c49a83bc8fd81c71bed93", [:mix], [], "hexpm", "9c30ac15255c2ba8399263db55ba32c2f4e5ec267b654ce23df99168b405c82e"},
   "bandit": {:hex, :bandit, "1.6.7", "42f30e37a1c89a2a12943c5dca76f731a2313e8a2e21c1a95dc8241893e922d1", [:mix], [{:hpax, "~> 1.0", [hex: :hpax, repo: "hexpm", optional: false]}, {:plug, "~> 1.14", [hex: :plug, repo: "hexpm", optional: false]}, {:telemetry, "~> 0.4 or ~> 1.0", [hex: :telemetry, repo: "hexpm", optional: false]}, {:thousand_island, "~> 1.0", [hex: :thousand_island, repo: "hexpm", optional: false]}, {:websock, "~> 0.5", [hex: :websock, repo: "hexpm", optional: false]}], "hexpm", "551ba8ff5e4fc908cbeb8c9f0697775fb6813a96d9de5f7fe02e34e76fd7d184"},
-  "box": {:git, "https://github.com/nicklayb/box_ex.git", "95cd78be051ab8b18dffb5b75af30d04f4ac15a9", [tag: "0.8.6"]},
+  "box": {:git, "https://github.com/nicklayb/box_ex.git", "cc721f385471fcc8f50fd3f9c577e67570dce906", [tag: "0.9.2"]},
   "box_ex": {:git, "https://github.com/nicklayb/box_ex.git", "ff9e3f51ff8fd6b55afe69eef244511a2223eca4", [tag: "0.1.0"]},
   "bunt": {:hex, :bunt, "1.0.0", "081c2c665f086849e6d57900292b3a161727ab40431219529f13c4ddcf3e7a44", [:mix], [], "hexpm", "dc5f86aa08a5f6fa6b8096f0735c4e76d54ae5c9fa2c143e5a1fc7c1cd9bb6b5"},
   "castore": {:hex, :castore, "1.0.11", "4bbd584741601eb658007339ea730b082cc61f3554cf2e8f39bf693a11b49073", [:mix], [], "hexpm", "e03990b4db988df56262852f20de0f659871c35154691427a5047f4967a16a62"},
