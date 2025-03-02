@@ -39,5 +39,13 @@ defmodule Caltar.Storage.Provider do
     |> PolymorphicEmbed.cast_polymorphic_embed(:configuration, required: true)
     |> Ecto.Changeset.validate_required(@required)
     |> Ecto.Changeset.validate_number(:every, greater_than_or_equal_to: @minimum_every_seconds)
+    |> Box.Ecto.Changeset.update_valid(&set_every_from_configuration/1)
+  end
+
+  defp set_every_from_configuration(%Ecto.Changeset{} = changeset) do
+    case Ecto.Changeset.get_field(changeset, :configuration) do
+      %struct{} = configuration ->
+        Ecto.Changeset.put_change(changeset, :every, struct.poll_every_timer(configuration))
+    end
   end
 end

@@ -29,7 +29,9 @@
                         </Components.tag>
                       <% timer -> %>
                         <Components.tag class="text-gray-900 bg-yellow-200 border-yellow-500">
-                          {gettext("Every %{value} seconds", value: timer)}
+                          {gettext("Every %{value}",
+                            value: Box.Integer.to_duration_string(timer * 1000 * 1000)
+                          )}
                         </Components.tag>
                     <% end %>
                   </div>

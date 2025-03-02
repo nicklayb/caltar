@@ -1,5 +1,6 @@
 defmodule Caltar.Storage.Configuration.Recurring do
   use Caltar, {:schema, persisted: false}
+  @behaviour Caltar.Storage.Configuration
 
   alias Caltar.Calendar.Event
   alias Caltar.Calendar.Marker
@@ -58,9 +59,14 @@ defmodule Caltar.Storage.Configuration.Recurring do
     end
   end
 
+  @impl Caltar.Storage.Configuration
   def poller_spec(_) do
     {:poller, Caltar.Calendar.Provider.Recurring}
   end
+
+  @impl Caltar.Storage.Configuration
+  @hour div(:timer.hours(1), 1000)
+  def poll_every_timer(_), do: @hour
 
   def generate(%Recurring{is_marker: true} = recurring, max_date) do
     generate_occurences(recurring, max_date, fn current_date ->

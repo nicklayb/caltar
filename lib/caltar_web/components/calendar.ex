@@ -162,7 +162,7 @@ defmodule CaltarWeb.Components.Calendar do
         </div>
       <% end %>
       <div
-        class="p-0.5 pl-1 line-clamp-1 w-full brightness-125"
+        class="p-0.5 pl-1 max-h-[3.2em] w-full brightness-125"
         style={"background-color: #{@event.color};"}
       >
         {@event.title}

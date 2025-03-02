@@ -1,5 +1,5 @@
 defmodule Caltar.Calendar.Provider.SportSchedule do
-  @behaviour Caltar.Calendar.Provider
+  use Caltar.Calendar.Provider
 
   alias Caltar.Calendar.Provider.Sport.Supervisor, as: SportSupervisor
   alias Caltar.Calendar.Poller
@@ -60,7 +60,9 @@ defmodule Caltar.Calendar.Provider.SportSchedule do
   def update(state, state, _options), do: :nothing
 
   def update(_old_state, new_state, _options) do
-    {:update, new_state, new_state}
+    new_state
+    |> update_state()
+    |> with_events(new_state)
   end
 
   def request_events("thescore", sport, team_id) do

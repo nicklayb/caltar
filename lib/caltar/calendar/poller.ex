@@ -1,6 +1,7 @@
 defmodule Caltar.Calendar.Poller do
   use GenServer
 
+  alias Caltar.Calendar.Provider.UpdateResult
   alias Caltar.Calendar.StorageSupervisor
   alias Caltar.Calendar.Event
   alias Caltar.Calendar.Marker
@@ -44,16 +45,16 @@ defmodule Caltar.Calendar.Poller do
   end
 
   def start_link(args) do
-    name =
-      args
-      |> Keyword.fetch!(:id)
-      |> StorageSupervisor.poller_name()
+    {provider_module, _} = Keyword.fetch!(args, :provider)
+    id = Keyword.fetch!(args, :id)
+    name = StorageSupervisor.registry_name({Poller, id, provider_module})
 
     GenServer.start_link(__MODULE__, args, name: name)
   end
 
   def init(args) do
     state = init_state(args)
+    Process.flag(:trap_exit, true)
     log(:info, state, "started")
     {:ok, state}
   end
@@ -77,28 +78,37 @@ defmodule Caltar.Calendar.Poller do
     {:noreply, state}
   end
 
-  defp handle_poll_result(poller, {:update, new_state, events, poller_configuration}) do
-    log(:info, poller, "updated with #{length(events)} events")
+  def terminate(reason, state) do
+    log(:info, state, "shutting down with reason #{inspect(reason)}")
+    push_events(state, [])
+    :ok
+  end
+
+  defp handle_poll_result(poller, %UpdateResult{
+         state: new_state,
+         reconfigure: reconfigure,
+         events: events
+       }) do
+    if events == :no_update do
+      log(:debug, poller, "no events")
+    else
+      log(:info, poller, "updated with #{length(events)} events")
+    end
 
     poller
     |> put_state(new_state)
-    |> reconfigure(poller_configuration)
+    |> reconfigure(reconfigure)
     |> push_events(events)
-  end
-
-  defp handle_poll_result(poller, {:update, new_state, events}) do
-    handle_poll_result(poller, {:update, new_state, events, []})
-  end
-
-  defp handle_poll_result(poller, {:update, new_state}) do
-    log(:debug, poller, "no events")
-
-    put_state(poller, new_state)
   end
 
   defp handle_poll_result(poller, :nothing) do
     log(:debug, poller, "no updates")
     poller
+  end
+
+  defp handle_poll_result(poller, {:backoff, error}) do
+    log(:error, poller, "Backing off, got error: " <> inspect(error))
+    backoff_poll(poller)
   end
 
   defp poll(%Poller{provider: {provider, options}, state: state} = poller) do
@@ -114,8 +124,7 @@ defmodule Caltar.Calendar.Poller do
     end
   rescue
     error ->
-      log(:error, poller, "Backing off, got error: " <> inspect(error))
-      {:update, backoff_poll(poller)}
+      {:backoff, error}
   end
 
   defp update_state(%Poller{provider: {provider, options}, state: old_state}, new_state) do
@@ -124,6 +133,10 @@ defmodule Caltar.Calendar.Poller do
 
   defp put_state(%Poller{} = poller, new_state) do
     %Poller{poller | state: new_state}
+  end
+
+  defp push_events(%Poller{} = poller, :no_update) do
+    poller
   end
 
   defp push_events(%Poller{id: poller_id, calendar_id: calendar_id} = poller, events) do

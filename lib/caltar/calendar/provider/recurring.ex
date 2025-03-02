@@ -1,5 +1,5 @@
 defmodule Caltar.Calendar.Provider.Recurring do
-  @behaviour Caltar.Calendar.Provider
+  use Caltar.Calendar.Provider
 
   alias Caltar.Storage.Provider
   alias Caltar.Storage.Configuration.Recurring
@@ -16,6 +16,8 @@ defmodule Caltar.Calendar.Provider.Recurring do
   def update(state, state, _options), do: :nothing
 
   def update(_old_state, events, _options) do
-    {:update, events, events}
+    events
+    |> update_state()
+    |> with_events(events)
   end
 end

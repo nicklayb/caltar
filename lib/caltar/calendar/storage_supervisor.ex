@@ -1,6 +1,8 @@
 defmodule Caltar.Calendar.StorageSupervisor do
   use Supervisor
 
+  alias Caltar.Calendar.Poller
+  alias Caltar.Calendar.Server, as: CalendarServer
   alias Caltar.Storage
 
   def start_link(args) do
@@ -77,11 +79,14 @@ defmodule Caltar.Calendar.StorageSupervisor do
     Registry.register(registry_name(), key, nil)
   end
 
-  def poller_name(provider_id), do: registry_name({:poller, provider_id})
+  def poller_name(provider_id), do: registry_name({Poller, provider_id})
 
-  def calendar_name(calendar_id), do: registry_name({:calendar, calendar_id})
+  def calendar_name(calendar_id), do: registry_name({CalendarServer, calendar_id})
 
-  def registry_name(key), do: {:via, Registry, {registry_name(), key}}
+  def registry_name({namespace, id}), do: {:via, Registry, {registry_name(), {namespace, id}}}
+
+  def registry_name({namespace, id, value}),
+    do: {:via, Registry, {registry_name(), {namespace, id}, value}}
 
   def registry_name, do: Caltar.Calendar.StorageSupervisor.Registry
 

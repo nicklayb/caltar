@@ -1,7 +1,7 @@
 defmodule Caltar.Calendar.Provider.Icalendar do
-  @behaviour Caltar.Calendar.Provider
-  alias Caltar.Storage.Provider
+  use Caltar.Calendar.Provider
   use Caltar.Http
+  alias Caltar.Storage.Provider
 
   alias Caltar.Calendar.Event
   alias Caltar.Storage.Configuration.Icalendar
@@ -31,7 +31,10 @@ defmodule Caltar.Calendar.Provider.Icalendar do
 
   def update(_old_state, new_state, _options) do
     events = Enum.map(new_state, &to_event/1)
-    {:update, new_state, events}
+
+    new_state
+    |> update_state()
+    |> with_events(events)
   end
 
   defp to_event(%ICalendar.Event{} = event) do

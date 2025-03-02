@@ -13,7 +13,10 @@ defmodule Caltar.Calendar.Server do
 
   @name Caltar.Calendar.Server
   def start_link(args) do
-    GenServer.start_link(__MODULE__, args)
+    slug = Keyword.fetch!(args, :slug)
+    id = Keyword.fetch!(args, :id)
+    name = StorageSupervisor.registry_name({CalendarServer, id, slug})
+    GenServer.start_link(__MODULE__, args, name: name)
   end
 
   def init(args) do
@@ -89,7 +92,6 @@ defmodule Caltar.Calendar.Server do
     calendar = Calendar.build(Caltar.Date.now!())
     slug = Keyword.fetch!(args, :slug)
     id = Keyword.fetch!(args, :id)
-    StorageSupervisor.register({:calendar, id})
 
     state = %CalendarServer{id: id, args: args, slug: slug, calendar: calendar}
 

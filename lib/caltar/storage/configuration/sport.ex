@@ -1,5 +1,6 @@
 defmodule Caltar.Storage.Configuration.Sport do
   use Caltar, {:schema, persisted: false}
+  @behaviour Caltar.Storage.Configuration
 
   alias Caltar.Storage.Configuration.Sport
 
@@ -41,9 +42,14 @@ defmodule Caltar.Storage.Configuration.Sport do
     end
   end
 
+  @impl Caltar.Storage.Configuration
   def poller_spec(provider) do
     {Caltar.Calendar.Provider.Sport.Supervisor, provider: provider}
   end
+
+  @hour div(:timer.hours(1), 1000)
+  @impl Caltar.Storage.Configuration
+  def poll_every_timer(_), do: @hour
 
   def providers, do: @provider_mapping
 end

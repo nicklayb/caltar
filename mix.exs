@@ -42,7 +42,8 @@ defmodule Caltar.MixProject do
       {:ex_cldr_dates_times, "~> 2.0"},
       {:ex_cldr_numbers, "~> 2.33"},
       {:tz, "~> 0.28"},
-      {:icalendar, git: "https://github.com/nicklayb/icalendar", tag: "1.2.1"},
+      {:recon, "~> 2.5.6"},
+      {:icalendar, git: "https://github.com/nicklayb/icalendar", tag: "1.2.2"},
       {:req, "~> 0.5.8"},
       {:polymorphic_embed, "~> 5.0.1"}
     ]

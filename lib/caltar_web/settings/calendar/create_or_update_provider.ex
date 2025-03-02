@@ -209,9 +209,6 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
             <Form.color_input field={@form[:color]}>
               <:label>{gettext("Provider color")}</:label>
             </Form.color_input>
-            <Form.text_input field={@form[:every]} placeholder={gettext("Example: 4m for 4 minutes")}>
-              <:label>{gettext("Update every")}</:label>
-            </Form.text_input>
             <Form.select_input field={@form[:configuration_type]} options={@configuration_types}>
               <:label>{gettext("Provider type")}</:label>
             </Form.select_input>

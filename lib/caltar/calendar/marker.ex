@@ -6,4 +6,8 @@ defmodule Caltar.Calendar.Marker do
     :date,
     :provider
   ]
+
+  alias Caltar.Calendar.Marker
+
+  @type t :: %Marker{}
 end

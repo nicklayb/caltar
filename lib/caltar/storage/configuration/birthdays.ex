@@ -1,5 +1,6 @@
 defmodule Caltar.Storage.Configuration.Birthdays do
   use Caltar, {:schema, persisted: false}
+  @behaviour Caltar.Storage.Configuration
 
   alias Caltar.Storage.Configuration.Birthdays
 
@@ -88,7 +89,11 @@ defmodule Caltar.Storage.Configuration.Birthdays do
     end
   end
 
+  @impl Caltar.Storage.Configuration
   def poller_spec(_provider) do
     {:poller, Caltar.Calendar.Provider.Birthdays}
   end
+
+  @impl Caltar.Storage.Configuration
+  def poll_every_timer(_), do: :never
 end

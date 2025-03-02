@@ -1,5 +1,5 @@
 defmodule Caltar.Calendar.Provider.Birthdays do
-  @behaviour Caltar.Calendar.Provider
+  use Caltar.Calendar.Provider
 
   alias Caltar.Storage.Provider
   alias Caltar.Calendar.Event
@@ -34,6 +34,8 @@ defmodule Caltar.Calendar.Provider.Birthdays do
         }
       end)
 
-    {:update, new_state, events}
+    new_state
+    |> update_state()
+    |> with_events(events)
   end
 end
