@@ -22,7 +22,10 @@ defmodule Caltar.Calendar.Provider.Sport.Supervisor do
        options: provider},
       {DynamicSupervisor,
        strategy: :one_for_one,
-       name: StorageSupervisor.registry_name({@registry_namespace, provider.id})}
+       name:
+         StorageSupervisor.registry_name(
+           {@registry_namespace, provider.id, provider.configuration.__struct__}
+         )}
     ]
 
     Supervisor.init(children, strategy: :one_for_all)
