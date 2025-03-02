@@ -15,17 +15,27 @@ defmodule Caltar.Calendar.Provider.SportEvent do
         _old_state,
         {%Event{params: %EventParams{id: id}}, %Provider{configuration: %Sport{} = sport}}
       ) do
-    with {:ok, event} <- request_event(sport.provider, sport.sport, sport.team_id, id) do
-      {:ok, [event]}
+    with {:ok, %Event{starts_at: starts_at} = event} <-
+           request_event(sport.provider, sport.sport, sport.team_id, id) do
+      if Caltar.Date.same_day?(Caltar.Date.now!(), starts_at) do
+        {:ok, [event]}
+      else
+        {:ok, []}
+      end
     end
   end
 
   @impl Caltar.Calendar.Provider
+  def update(_, [], _) do
+    send(self(), :stop)
+
+    {:update, [], [], [every: :never]}
+  end
+
   def update(state, state, _options), do: :nothing
 
   def update(_old_state, [%Event{starts_at: starts_at} = event], _options) do
-    now = Caltar.Date.now!()
-    event_in = DateTime.diff(now, starts_at, :minute)
+    event_in = DateTime.diff(Caltar.Date.now!(), starts_at, :minute)
     starts_soon? = event_in <= @start_in_threshold
     status = event.params.progress.status
 
@@ -36,10 +46,6 @@ defmodule Caltar.Calendar.Provider.SportEvent do
         status == :pending -> @minute * 10
         true -> @minute * 30
       end
-
-    if not Caltar.Date.same_day?(now, starts_at) do
-      send(self(), :stop)
-    end
 
     {:update, [event], [event], [every: every]}
   end

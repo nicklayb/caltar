@@ -184,8 +184,8 @@ defmodule Caltar.Calendar.Poller do
 
   defp schedule_poll(%Poller{update_timer: update_timer} = poller, timer) do
     if update_timer, do: Process.cancel_timer(update_timer)
-    Process.send_after(self(), :poll, timer)
-    poller
+    update_timer = Process.send_after(self(), :poll, timer)
+    %Poller{poller | update_timer: update_timer}
   end
 
   defp reconfigure(%Poller{} = state, []), do: state

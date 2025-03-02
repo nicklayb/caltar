@@ -31,19 +31,29 @@ defmodule Caltar.Calendar.Provider.SportSchedule do
       end)
 
     Enum.each(current_events, fn current_event ->
-      SportSupervisor.start_child(
-        provider.id,
-        {Poller,
-         id: provider.id <> ":" <> to_string(current_event.id),
-         color: provider.color,
-         every: 60,
-         calendar_id: provider.calendar_id,
-         module: Caltar.Calendar.Provider.SportEvent,
-         options: {current_event, provider}}
-      )
+      case start_child(current_event, provider) do
+        {:ok, _} ->
+          :ok
+
+        {:error, {:already_started, pid}} ->
+          GenServer.cast(pid, :poll)
+      end
     end)
 
     other_events
+  end
+
+  defp start_child(event, provider) do
+    SportSupervisor.start_child(
+      provider.id,
+      {Poller,
+       id: provider.id <> ":" <> to_string(event.id),
+       color: provider.color,
+       every: 60,
+       calendar_id: provider.calendar_id,
+       module: Caltar.Calendar.Provider.SportEvent,
+       options: {event, provider}}
+    )
   end
 
   @impl Caltar.Calendar.Provider
