@@ -4,6 +4,7 @@ defmodule Caltar.Application do
   @impl Application
   def start(_type, _args) do
     children = [
+      {Box.Cache.Server, name: Caltar.Cache},
       Caltar.Repo,
       {Ecto.Migrator, repos: ecto_repos()},
       Caltar.PubSub,

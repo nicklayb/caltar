@@ -27,11 +27,14 @@ defmodule Caltar.Calendar.Provider.Sport.TheScore do
 
   def teams(options) do
     sport = Keyword.fetch!(options, :sport)
-    url = URI.parse("/#{sport}/teams")
 
-    with {:ok, %HttpResponse{status: 200, body: body}} <- request(url: url) do
-      {:ok, to_teams(body)}
-    end
+    Box.Cache.memoize(Caltar.Cache, {:thescore, :teams, sport}, fn ->
+      url = URI.parse("/#{sport}/teams")
+
+      with {:ok, %HttpResponse{status: 200, body: body}} <- request(url: url) do
+        {:ok, to_teams(body)}
+      end
+    end)
   end
 
   defp to_teams(body) do
