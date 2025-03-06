@@ -1,11 +1,11 @@
 defmodule Caltar.Calendar.Server do
   use GenServer
 
-  alias Caltar.Calendar.StorageSupervisor
   alias Caltar.Calendar
   alias Caltar.Calendar.Event
   alias Caltar.Calendar.Marker
   alias Caltar.Calendar.Server, as: CalendarServer
+  alias Caltar.Calendar.StorageSupervisor
 
   require Logger
 

@@ -1,6 +1,6 @@
 defmodule Caltar.Storage.Configuration.Sport do
-  use Caltar, {:schema, persisted: false}
   @behaviour Caltar.Storage.Configuration
+  use Caltar, {:schema, persisted: false}
 
   alias Caltar.Storage.Configuration.Sport
 
@@ -11,8 +11,8 @@ defmodule Caltar.Storage.Configuration.Sport do
   end
 
   @provider_mapping %{
-    "thescore" => ~w(nhl mlb nfl nba cfl),
-    "chl" => ~w(lhjmq)
+    "thescore" => ~w(nhl mlb nfl nba cfl pwhl),
+    "hockey_tech" => ~w(ohl whl lhjmq)
   }
 
   @providers Map.keys(@provider_mapping)

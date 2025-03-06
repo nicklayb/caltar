@@ -1,8 +1,8 @@
 defmodule Caltar.Calendar.Provider.Recurring do
   use Caltar.Calendar.Provider
 
-  alias Caltar.Storage.Provider
   alias Caltar.Storage.Configuration.Recurring
+  alias Caltar.Storage.Provider
 
   @impl Caltar.Calendar.Provider
   def poll(%DateTime{} = date_time, _old_state, %Provider{configuration: %Recurring{} = recurring}) do

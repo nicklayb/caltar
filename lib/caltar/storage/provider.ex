@@ -45,7 +45,13 @@ defmodule Caltar.Storage.Provider do
   defp set_every_from_configuration(%Ecto.Changeset{} = changeset) do
     case Ecto.Changeset.get_field(changeset, :configuration) do
       %struct{} = configuration ->
-        Ecto.Changeset.put_change(changeset, :every, struct.poll_every_timer(configuration))
+        every =
+          case struct.poll_every_timer(configuration) do
+            :never -> nil
+            integer -> integer
+          end
+
+        Ecto.Changeset.put_change(changeset, :every, every)
     end
   end
 end

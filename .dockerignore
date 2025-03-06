@@ -1,0 +1,10 @@
+.elixir_ls/
+_build/
+deps/
+Justfile
+priv/static
+flake.*
+README.md
+.gitignore
+.git/
+

@@ -1,6 +1,6 @@
 import { Socket } from "phoenix"
 import { LiveSocket } from "phoenix_live_view"
-import Hooks from "./hooks"
+import * as Hooks from "./hooks"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {

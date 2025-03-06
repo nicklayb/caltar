@@ -31,11 +31,16 @@ config :esbuild,
   ]
 
 tailwind_path =
-  case System.cmd("whereis", ["tailwindcss"]) do
-    {"tailwindcss: " <> path, 0} ->
-      String.trim(path)
+  try do
+    case System.cmd("whereis", ["tailwindcss"]) do
+      {"tailwindcss: " <> path, 0} ->
+        String.trim(path)
 
-    _ ->
+      _ ->
+        nil
+    end
+  catch
+    _, _ ->
       nil
   end
 

@@ -1,10 +1,11 @@
 defmodule Caltar.Calendar.Provider.SportEvent do
   use Caltar.Calendar.Provider
 
+  alias Caltar.Calendar.Event
+  alias Caltar.Calendar.Provider.Sport.EventParams
+  alias Caltar.Calendar.Provider.Sport.HockeyTech
   alias Caltar.Calendar.Provider.Sport.TheScore
   alias Caltar.Storage.Configuration.Sport
-  alias Caltar.Calendar.Provider.Sport.EventParams
-  alias Caltar.Calendar.Event
   alias Caltar.Storage.Provider
 
   @minute 60
@@ -58,6 +59,10 @@ defmodule Caltar.Calendar.Provider.SportEvent do
     [event]
     |> update_state()
     |> with_events([event])
+  end
+
+  def request_event("hockey_tech", sport, team_id, event_id) do
+    HockeyTech.event(sport: sport, team_id: team_id, event_id: event_id)
   end
 
   def request_event("thescore", sport, team_id, event_id) do

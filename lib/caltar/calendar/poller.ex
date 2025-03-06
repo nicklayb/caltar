@@ -1,11 +1,11 @@
 defmodule Caltar.Calendar.Poller do
   use GenServer
 
-  alias Caltar.Calendar.Provider.UpdateResult
-  alias Caltar.Calendar.StorageSupervisor
   alias Caltar.Calendar.Event
   alias Caltar.Calendar.Marker
   alias Caltar.Calendar.Poller
+  alias Caltar.Calendar.Provider.UpdateResult
+  alias Caltar.Calendar.StorageSupervisor
 
   require Logger
 

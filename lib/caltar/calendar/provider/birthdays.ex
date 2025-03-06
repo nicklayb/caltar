@@ -1,9 +1,9 @@
 defmodule Caltar.Calendar.Provider.Birthdays do
   use Caltar.Calendar.Provider
 
-  alias Caltar.Storage.Provider
   alias Caltar.Calendar.Event
   alias Caltar.Storage.Configuration.Birthdays
+  alias Caltar.Storage.Provider
 
   @impl Caltar.Calendar.Provider
   def poll(%DateTime{}, _previous_state, %Provider{

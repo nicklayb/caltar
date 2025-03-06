@@ -1,1 +1,5 @@
-export default {}
+import Clock from './Clock'
+
+export {
+  Clock
+}

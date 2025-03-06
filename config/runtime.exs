@@ -24,3 +24,10 @@ config :caltar, CaltarWeb.Endpoint,
   url: [host: app_host.host, scheme: app_host.scheme, port: app_host.port],
   secret_key_base: Box.Config.get!("SECRET_KEY_BASE"),
   live_view: [signing_salt: Box.Config.get!("LIVE_VIEW_SALT")]
+
+config :caltar, Caltar.Client.Geonames,
+  http: [
+    params: [
+      username: Box.Config.get("GEONAMES_USERNAME")
+    ]
+  ]

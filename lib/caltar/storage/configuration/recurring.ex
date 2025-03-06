@@ -1,6 +1,6 @@
 defmodule Caltar.Storage.Configuration.Recurring do
-  use Caltar, {:schema, persisted: false}
   @behaviour Caltar.Storage.Configuration
+  use Caltar, {:schema, persisted: false}
 
   alias Caltar.Calendar.Event
   alias Caltar.Calendar.Marker
@@ -13,20 +13,17 @@ defmodule Caltar.Storage.Configuration.Recurring do
     field(:every_unit, :string)
     field(:from_date, :date)
     field(:to_date, :date)
-    field(:is_marker, :boolean, default: false)
   end
 
   @required ~w(name from_date every_count every_unit)a
-  @optional ~w(to_date icon is_marker)a
+  @optional ~w(to_date icon)a
   @castable @required ++ @optional
   def changeset(%Recurring{} = recurring \\ %Recurring{}, params) do
     recurring
     |> Ecto.Changeset.cast(params, @castable)
     |> Ecto.Changeset.validate_required(@required)
     |> Box.Ecto.Changeset.update_valid(fn changeset ->
-      changeset
-      |> validate_marker_has_icon()
-      |> Ecto.Changeset.validate_change(:every_unit, &validate_unit/2)
+      Ecto.Changeset.validate_change(changeset, :every_unit, &validate_unit/2)
     end)
   end
 
@@ -43,22 +40,6 @@ defmodule Caltar.Storage.Configuration.Recurring do
     [every_unit: "is invalid"]
   end
 
-  defp validate_marker_has_icon(%Ecto.Changeset{} = changeset) do
-    is_marker? = Ecto.Changeset.get_field(changeset, :is_marker)
-    icon = Ecto.Changeset.get_field(changeset, :icon)
-
-    cond do
-      is_marker? and is_nil(icon) ->
-        Ecto.Changeset.add_error(changeset, :icon, "must be present when marker")
-
-      not is_marker? and not is_nil(icon) ->
-        Ecto.Changeset.add_error(changeset, :icon, "must be empty for non-marker")
-
-      true ->
-        changeset
-    end
-  end
-
   @impl Caltar.Storage.Configuration
   def poller_spec(_) do
     {:poller, Caltar.Calendar.Provider.Recurring}
@@ -68,7 +49,7 @@ defmodule Caltar.Storage.Configuration.Recurring do
   @hour div(:timer.hours(1), 1000)
   def poll_every_timer(_), do: @hour
 
-  def generate(%Recurring{is_marker: true} = recurring, max_date) do
+  def generate(%Recurring{icon: icon} = recurring, max_date) when is_binary(icon) do
     generate_occurences(recurring, max_date, fn current_date ->
       %Marker{
         id: recurring.id <> "|" <> Date.to_string(current_date),

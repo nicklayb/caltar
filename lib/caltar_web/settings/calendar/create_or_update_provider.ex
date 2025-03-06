@@ -2,11 +2,11 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
   use CaltarWeb, :live_component
 
   alias Caltar.Calendar.Provider.SportSchedule, as: SportProvider
-  alias Caltar.Storage.Configuration.Sport
   alias Caltar.Storage
   alias Caltar.Storage.Configuration.Birthdays
   alias Caltar.Storage.Configuration.Icalendar
   alias Caltar.Storage.Configuration.Recurring
+  alias Caltar.Storage.Configuration.Sport
   alias Caltar.Storage.Provider
 
   alias CaltarWeb.Components.Form
@@ -295,25 +295,19 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
         />
       </div>
     </Form.element>
-    <Form.checkbox field={@form[:is_marker]} value="true" checked={@form[:is_marker].value == true}>
-      <:label>{gettext("As Marker?")}</:label>
-    </Form.checkbox>
-    <%= if @form[:is_marker].value do %>
-      <Form.element name={:every}>
-        <:label>{gettext("Every")}</:label>
-        <div class="flex items-center">
-          <Form.select_input field={@form[:icon]} options={@icons} element_class="w-full">
-            <:label>{gettext("Icon")}</:label>
-          </Form.select_input>
+    <Form.element name={:icon}>
+      <div class="flex items-center">
+        <Form.select_input field={@form[:icon]} options={@icons} element_class="w-full">
+          <:label>{gettext("Icon")}</:label>
+        </Form.select_input>
 
-          <%= if @form[:icon].value not in ["", nil] do %>
-            <div class="text-gray-200 ml-3">
-              <Components.Icon.icon icon={@form[:icon].value} width={35} height={35} />
-            </div>
-          <% end %>
-        </div>
-      </Form.element>
-    <% end %>
+        <%= if @form[:icon].value not in ["", nil] do %>
+          <div class="text-gray-200 ml-3">
+            <Components.Icon.icon icon={@form[:icon].value} width={35} height={35} />
+          </div>
+        <% end %>
+      </div>
+    </Form.element>
     """
   end
 
@@ -339,6 +333,9 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
     ~H"""
     <Form.text_input field={@form[:url]}>
       <:label>{gettext("URL")}</:label>
+    </Form.text_input>
+    <Form.text_input field={@form[:icon]}>
+      <:label>{gettext("Icon (optional)")}</:label>
     </Form.text_input>
     """
   end

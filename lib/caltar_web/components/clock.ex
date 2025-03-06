@@ -3,7 +3,7 @@ defmodule CaltarWeb.Components.Clock do
 
   def render(assigns) do
     ~H"""
-    <div class="flex text-7xl">
+    <div class="flex text-7xl" id="clock" phx-hook="Clock">
       <.number value={@clock.hour} />
       <.colon />
       <.number value={@clock.minute} />

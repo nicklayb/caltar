@@ -1,12 +1,13 @@
 defmodule Caltar.Calendar.Provider.SportSchedule do
   use Caltar.Calendar.Provider
 
-  alias Caltar.Calendar.Provider.Sport.Supervisor, as: SportSupervisor
-  alias Caltar.Calendar.Poller
   alias Caltar.Calendar.Event
-  alias Caltar.Storage.Provider
-  alias Caltar.Storage.Configuration.Sport
+  alias Caltar.Calendar.Poller
+  alias Caltar.Calendar.Provider.Sport.HockeyTech
+  alias Caltar.Calendar.Provider.Sport.Supervisor, as: SportSupervisor
   alias Caltar.Calendar.Provider.Sport.TheScore
+  alias Caltar.Storage.Configuration.Sport
+  alias Caltar.Storage.Provider
 
   @impl Caltar.Calendar.Provider
   def poll(
@@ -67,6 +68,14 @@ defmodule Caltar.Calendar.Provider.SportSchedule do
 
   def request_events("thescore", sport, team_id) do
     TheScore.schedule(sport: sport, team_id: team_id)
+  end
+
+  def request_events("hockey_tech", sport, team_id) do
+    HockeyTech.schedule(sport: sport, team_id: team_id)
+  end
+
+  def request_teams("hockey_tech", sport) do
+    HockeyTech.teams(sport: sport)
   end
 
   def request_teams("thescore", sport) do

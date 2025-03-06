@@ -45,7 +45,9 @@ defmodule Caltar.MixProject do
       {:recon, "~> 2.5.6"},
       {:icalendar, git: "https://github.com/nicklayb/icalendar", tag: "1.2.2"},
       {:req, "~> 0.5.8"},
-      {:polymorphic_embed, "~> 5.0.1"}
+      {:polymorphic_embed, "~> 5.0.1"},
+      {:starchoice, "~> 0.3.0"},
+      {:floki, "~> 0.37.0"}
     ]
   end
 

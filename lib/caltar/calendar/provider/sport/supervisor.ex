@@ -1,8 +1,8 @@
 defmodule Caltar.Calendar.Provider.Sport.Supervisor do
   use Supervisor
 
-  alias Caltar.Calendar.StorageSupervisor
   alias Caltar.Calendar.Poller
+  alias Caltar.Calendar.StorageSupervisor
 
   @registry_namespace Caltar.Calendar.Provider.Sport.Supervisor
   def start_link(args) do

@@ -1,9 +1,11 @@
 defmodule CaltarWeb.Components.Calendar do
   use CaltarWeb, :component
 
-  alias Caltar.Calendar.Provider.Sport, as: SportProvider
   alias Caltar.Calendar
   alias Caltar.Calendar.Marker
+  alias Caltar.Calendar.Provider.Icalendar, as: IcalendarProvider
+  alias Caltar.Calendar.Provider.Sport, as: SportProvider
+  alias Caltar.Storage.Configuration
 
   def render(assigns) do
     ~H"""
@@ -111,61 +113,83 @@ defmodule CaltarWeb.Components.Calendar do
     ~H"""
     <div class="mb-1 flex overflow-hidden rounded-sm text-sm text-gray-800">
       <%= case @status do %>
-        <% :finished -> %>
-          <div
-            class="p-0.5 pl-1 line-clamp-1 w-full brightness-125"
-            style={"background-color: #{@event.color};"}
-          >
-            {@title}
-          </div>
         <% :pending -> %>
-          <div class="py-0.5 px-1 bg-white font-bold" style={"background-color: #{@event.color};"}>
-            {String.pad_leading(@start_time, 5, "0")}
-          </div>
-          <div
-            class="p-0.5 pl-1 line-clamp-1 w-full brightness-125"
-            style={"background-color: #{@event.color};"}
-          >
-            {@title}
-          </div>
-        <% :in_progress -> %>
-          <div class="flex justify-between w-full">
-            <div class="flex items-center">
-              <img class="w-8" src={@event.params.away.avatar} />
-              <span class="text-white text-lg">{@event.params.away.score}</span>
+          <.sport_event_scores home={@event.params.home} away={@event.params.away} logo_size="w-6">
+            <div class="text-white text-md flex flex-col items-center justify-center">
+              {@start_time}
             </div>
+          </.sport_event_scores>
+        <% :finished -> %>
+          <.sport_event_scores home={@event.params.home} away={@event.params.away} logo_size="w-6">
+            <div class="text-white text-md flex flex-col items-center"></div>
+          </.sport_event_scores>
+        <% _ -> %>
+          <.sport_event_scores home={@event.params.home} away={@event.params.away} logo_size="w-8">
             <div class="text-white text-md flex flex-col items-center">
               <span class="text-xs">{@event.params.progress.clock}</span>
               <span class="text-xs">{@event.params.progress.clock_status}</span>
             </div>
-            <div class="flex items-center">
-              <span class="text-white text-lg">{@event.params.home.score}</span>
-              <img class="w-8" src={@event.params.home.avatar} />
-            </div>
-          </div>
+          </.sport_event_scores>
       <% end %>
     </div>
     """
   end
 
-  defp event(%{event: %Calendar.Event{starts_at: starts_at} = event} = assigns) do
+  defp event(assigns) do
+    ~H"""
+    <.standard_event event={@event} color={@event.color}>
+      <%= case @event.params do %>
+        <% %IcalendarProvider.Params{icon: icon} -> %>
+          <div class="flex">
+            <img src={icon} class="h-2" />
+            {@event.title}
+          </div>
+        <% _ -> %>
+          {@event.title}
+      <% end %>
+    </.standard_event>
+    """
+  end
+
+  defp standard_event(%{event: %Calendar.Event{starts_at: starts_at} = event} = assigns) do
+    start_time =
+      starts_at
+      |> Caltar.Date.to_string!(format: "H:mm")
+      |> String.pad_leading(5, "0")
+
     assigns =
       assigns
-      |> assign(:start_time, Caltar.Date.to_string!(starts_at, format: "H:mm"))
+      |> assign(:start_time, start_time)
       |> assign(:full_day?, Calendar.Event.full_day?(event))
 
     ~H"""
     <div class="mb-1 flex overflow-hidden rounded-sm text-sm text-gray-800">
       <%= if not @full_day? do %>
-        <div class="py-0.5 px-1 bg-white font-bold" style={"background-color: #{@event.color};"}>
+        <div class="py-0.5 px-1 bg-white font-bold" style={"background-color: #{@color};"}>
           {String.pad_leading(@start_time, 5, "0")}
         </div>
       <% end %>
       <div
         class="p-0.5 pl-1 max-h-[3.2em] w-full brightness-125"
-        style={"background-color: #{@event.color};"}
+        style={"background-color: #{@color};"}
       >
-        {@event.title}
+        {render_slot(@inner_block)}
+      </div>
+    </div>
+    """
+  end
+
+  defp sport_event_scores(assigns) do
+    ~H"""
+    <div class="flex justify-between w-full">
+      <div class="flex items-center">
+        <img class={@logo_size} src={@away.avatar} />
+        <span class="text-white text-lg">{@away.score}</span>
+      </div>
+      {render_slot(@inner_block)}
+      <div class="flex items-center">
+        <span class="text-white text-lg">{@home.score}</span>
+        <img class={@logo_size} src={@home.avatar} />
       </div>
     </div>
     """

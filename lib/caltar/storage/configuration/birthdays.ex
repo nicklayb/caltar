@@ -1,6 +1,6 @@
 defmodule Caltar.Storage.Configuration.Birthdays do
-  use Caltar, {:schema, persisted: false}
   @behaviour Caltar.Storage.Configuration
+  use Caltar, {:schema, persisted: false}
 
   alias Caltar.Storage.Configuration.Birthdays
 

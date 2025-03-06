@@ -1,17 +1,20 @@
 defmodule Caltar.Storage.Configuration.Icalendar do
-  use Caltar, {:schema, persisted: false}
   @behaviour Caltar.Storage.Configuration
+  use Caltar, {:schema, persisted: false}
 
   alias Caltar.Storage.Configuration.Icalendar
 
   embedded_schema do
     field(:url, :string)
+    field(:icon, :string)
   end
 
   @required ~w(url)a
+  @optional ~w(icon)a
+  @castable @required ++ @optional
   def changeset(%Icalendar{} = icalendar \\ %Icalendar{}, params) do
     icalendar
-    |> Ecto.Changeset.cast(params, @required)
+    |> Ecto.Changeset.cast(params, @castable)
     |> Ecto.Changeset.validate_required(@required)
   end
 
