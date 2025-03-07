@@ -135,10 +135,27 @@ defmodule CaltarWeb.Components.Calendar do
     """
   end
 
-  defp event(assigns) do
+  defp event(%{event: %Calendar.Event{color: color, params: params}} = assigns) do
+    color =
+      case params do
+        %IcalendarProvider.Formula1Params{} -> "#FFFFFF"
+        _ -> color
+      end
+
+    assigns = assign(assigns, :color, color)
+
     ~H"""
-    <.standard_event event={@event} color={@event.color}>
+    <.standard_event event={@event} color={@color}>
       <%= case @event.params do %>
+        <% %IcalendarProvider.Formula1Params{short_name: short_name, country_code: country_code} -> %>
+          <div class="flex items-center justify-between">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/f/f2/New_era_F1_logo.png"
+              class="h-3"
+            />
+            {short_name}
+            <img src={"https://flagsapi.com/#{country_code}/flat/64.png"} class="h-6" />
+          </div>
         <% %IcalendarProvider.Params{icon: icon} -> %>
           <div class="flex">
             <img src={icon} class="h-2" />

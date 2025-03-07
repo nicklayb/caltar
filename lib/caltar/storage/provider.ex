@@ -19,6 +19,7 @@ defmodule Caltar.Storage.Provider do
       types: [
         birthdays: Caltar.Storage.Configuration.Birthdays,
         icalendar: Caltar.Storage.Configuration.Icalendar,
+        formula_1: Caltar.Storage.Configuration.Formula1,
         recurring: Caltar.Storage.Configuration.Recurring,
         sport: Caltar.Storage.Configuration.Sport
       ],

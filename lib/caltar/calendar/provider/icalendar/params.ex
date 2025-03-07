@@ -1,3 +1,3 @@
 defmodule Caltar.Calendar.Provider.Icalendar.Params do
-  defstruct [:icon]
+  defstruct [:geo, :icon]
 end

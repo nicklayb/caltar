@@ -32,21 +32,31 @@ defmodule Caltar.Calendar.Provider.Sport.HockeyTech do
     league = Keyword.fetch!(options, :sport)
     options = Keyword.put(options, :league, league)
 
-    Box.Cache.memoize(Caltar.Cache, {:thescore, :teams, league}, fn ->
-      with {:ok, {_league, season_id}} <- current_season_id(options),
-           {:ok, teams} <- HockeyTechClient.teams([{:season_id, season_id} | options]) do
-        {:ok, to_teams(teams)}
+    Box.Cache.memoize(
+      Caltar.Cache,
+      {:thescore, :teams, league},
+      [cache_match: &Box.Result.succeeded?/1],
+      fn ->
+        with {:ok, {_league, season_id}} <- current_season_id(options),
+             {:ok, teams} <- HockeyTechClient.teams([{:season_id, season_id} | options]) do
+          {:ok, to_teams(teams)}
+        end
       end
-    end)
+    )
   end
 
   defp current_season_id(options) do
     league = Keyword.fetch!(options, :sport)
     options = Keyword.put(options, :league, league)
 
-    Box.Cache.memoize(Caltar.Cache, {:hockey_tech, :current_season, league}, fn ->
-      HockeyTechClient.current_season(options)
-    end)
+    Box.Cache.memoize(
+      Caltar.Cache,
+      {:hockey_tech, :current_season, league},
+      [cache_match: &Box.Result.succeeded?/1],
+      fn ->
+        HockeyTechClient.current_season(options)
+      end
+    )
   end
 
   defp to_teams(body) do

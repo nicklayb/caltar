@@ -24,11 +24,16 @@ defmodule Caltar.Calendar.Provider.Sport.TheScore do
   def teams(options) do
     sport = Keyword.fetch!(options, :sport)
 
-    Box.Cache.memoize(Caltar.Cache, {:thescore, :teams, sport}, fn ->
-      with {:ok, teams} <- TheScoreClient.teams(options) do
-        {:ok, to_teams(teams)}
+    Box.Cache.memoize(
+      Caltar.Cache,
+      {:thescore, :teams, sport},
+      [cache_match: &Box.Result.succeeded?/1],
+      fn ->
+        with {:ok, teams} <- TheScoreClient.teams(options) do
+          {:ok, to_teams(teams)}
+        end
       end
-    end)
+    )
   end
 
   defp to_teams(body) do
