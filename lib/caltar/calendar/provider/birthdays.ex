@@ -1,6 +1,8 @@
 defmodule Caltar.Calendar.Provider.Birthdays do
   use Caltar.Calendar.Provider
+  use CaltarWeb.Gettext
 
+  alias Caltar.Calendar.Provider.Birthdays.Params, as: BirthdaysParams
   alias Caltar.Calendar.Event
   alias Caltar.Storage.Configuration.Birthdays
   alias Caltar.Storage.Provider
@@ -13,7 +15,9 @@ defmodule Caltar.Calendar.Provider.Birthdays do
 
     birthdays
     |> Enum.map(fn {name, date} ->
-      {name, Map.put(date, :year, now.year)}
+      age = now.year - date.year
+
+      {name, age, Map.put(date, :year, now.year)}
     end)
     |> Box.Result.succeed()
   end
@@ -23,14 +27,15 @@ defmodule Caltar.Calendar.Provider.Birthdays do
 
   def update(_, new_state, _) do
     events =
-      Enum.map(new_state, fn {name, date} ->
+      Enum.map(new_state, fn {name, age, date} ->
         full_date = Caltar.Date.date_time_from_date(date)
 
         %Event{
           id: "birthday|" <> name,
-          title: "🎂 #{name}",
+          title: name,
           starts_at: full_date,
-          ends_at: full_date
+          ends_at: full_date,
+          params: %BirthdaysParams{age: age}
         }
       end)
 

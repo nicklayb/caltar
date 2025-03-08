@@ -3,6 +3,7 @@ defmodule CaltarWeb.Components.Calendar do
 
   alias Caltar.Calendar
   alias Caltar.Calendar.Marker
+  alias Caltar.Calendar.Provider.Birthdays, as: BirthdaysProvider
   alias Caltar.Calendar.Provider.Icalendar, as: IcalendarProvider
   alias Caltar.Calendar.Provider.Sport, as: SportProvider
   alias Caltar.Storage.Configuration
@@ -136,30 +137,37 @@ defmodule CaltarWeb.Components.Calendar do
   end
 
   defp event(%{event: %Calendar.Event{color: color, params: params}} = assigns) do
-    color =
+    {class, color} =
       case params do
-        %IcalendarProvider.Formula1Params{} -> "#FFFFFF"
-        _ -> color
+        %IcalendarProvider.Formula1Params{} -> {"text-white", "#FFFFFF00"}
+        _ -> {"", color}
       end
 
-    assigns = assign(assigns, :color, color)
+    assigns =
+      assigns
+      |> assign(:color, color)
+      |> assign(:class, class)
 
     ~H"""
-    <.standard_event event={@event} color={@color}>
+    <.standard_event event={@event} color={@color} class={@class}>
       <%= case @event.params do %>
         <% %IcalendarProvider.Formula1Params{short_name: short_name, country_code: country_code} -> %>
           <div class="flex items-center justify-between">
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/f/f2/New_era_F1_logo.png"
-              class="h-3"
+              class="h-2"
             />
             {short_name}
-            <img src={"https://flagsapi.com/#{country_code}/flat/64.png"} class="h-6" />
+            <img src={"https://flagcdn.com/w40/#{String.downcase(country_code)}.png"} class="h-3" />
           </div>
         <% %IcalendarProvider.Params{icon: icon} -> %>
           <div class="flex">
             <img src={icon} class="h-2" />
             {@event.title}
+          </div>
+        <% %BirthdaysProvider.Params{age: age} -> %>
+          <div class="flex">
+            🎂 {@event.title} ({gettext("%{age} yo", age: age)})
           </div>
         <% _ -> %>
           {@event.title}
@@ -167,6 +175,12 @@ defmodule CaltarWeb.Components.Calendar do
     </.standard_event>
     """
   end
+
+  attr(:color, :any, required: true)
+  attr(:event, Calendar.Event, required: true)
+  attr(:class, :string, default: "")
+
+  slot(:inner_block, required: true)
 
   defp standard_event(%{event: %Calendar.Event{starts_at: starts_at} = event} = assigns) do
     start_time =
@@ -180,7 +194,7 @@ defmodule CaltarWeb.Components.Calendar do
       |> assign(:full_day?, Calendar.Event.full_day?(event))
 
     ~H"""
-    <div class="mb-1 flex overflow-hidden rounded-sm text-sm text-gray-800">
+    <div class={Html.class("mb-1 flex overflow-hidden rounded-sm text-xs text-gray-800", @class)}>
       <%= if not @full_day? do %>
         <div class="py-0.5 px-1 bg-white font-bold" style={"background-color: #{@color};"}>
           {String.pad_leading(@start_time, 5, "0")}
@@ -198,14 +212,14 @@ defmodule CaltarWeb.Components.Calendar do
 
   defp sport_event_scores(assigns) do
     ~H"""
-    <div class="flex justify-between w-full">
+    <div class="flex justify-between w-full text-xs">
       <div class="flex items-center">
         <img class={@logo_size} src={@away.avatar} />
-        <span class="text-white text-lg">{@away.score}</span>
+        <span class="text-white text-lg ml-1">{@away.score}</span>
       </div>
       {render_slot(@inner_block)}
       <div class="flex items-center">
-        <span class="text-white text-lg">{@home.score}</span>
+        <span class="text-white text-lg mr-1">{@home.score}</span>
         <img class={@logo_size} src={@home.avatar} />
       </div>
     </div>

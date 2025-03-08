@@ -11,7 +11,151 @@ msgstr ""
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n>1);\n"
 
-#: lib/caltar_web/components/calendar.ex:66
+#: lib/caltar_web/components/calendar.ex:89
 #, elixir-autogen, elixir-format
 msgid "+%{count} more"
 msgstr "+%{count} de plus"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:248
+#, elixir-autogen, elixir-format
+msgid "Birthdays"
+msgstr "Anniversaires"
+
+#: lib/caltar_web/settings/calendar.html.heex:76
+#, elixir-autogen, elixir-format
+msgid "Calendar does not exists"
+msgstr "Le calendrier n'existe pas"
+
+#: lib/caltar_web/components/layouts.ex:75
+#, elixir-autogen, elixir-format
+msgid "Calendars"
+msgstr "Calendriers"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:28
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:153
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:188
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:258
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:263
+#, elixir-autogen, elixir-format
+msgid "Choose"
+msgstr "Choisir"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:52
+#, elixir-autogen, elixir-format
+msgid "Create"
+msgstr "Créer"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:51
+#, elixir-autogen, elixir-format
+msgid "Create Provider"
+msgstr "Créer un fournisseur"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:288
+#, elixir-autogen, elixir-format
+msgid "Every"
+msgstr "Occurence"
+
+#: lib/caltar_web/settings/calendar.html.heex:32
+#, elixir-autogen, elixir-format
+msgid "Every %{value}"
+msgstr "Tous les %{value}"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:277
+#, elixir-autogen, elixir-format
+msgid "From"
+msgstr "De"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:273
+#, elixir-autogen, elixir-format
+msgid "From / To"
+msgstr "De / À"
+
+#: lib/caltar_web/components/layouts.ex:69
+#, elixir-autogen, elixir-format
+msgid "Global"
+msgstr "Global"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:301
+#, elixir-autogen, elixir-format
+msgid "Icon"
+msgstr "Icône"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:338
+#, elixir-autogen, elixir-format
+msgid "Icon (optional)"
+msgstr "Icône (optionel)"
+
+#: lib/caltar_web/settings/calendar.html.heex:70
+#, elixir-autogen, elixir-format
+msgid "No providers"
+msgstr "Aucun fournisseur"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:210
+#, elixir-autogen, elixir-format
+msgid "Provider color"
+msgstr "Couleur du fournisseur"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:207
+#, elixir-autogen, elixir-format
+msgid "Provider name"
+msgstr "Nom du fournisseur"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:213
+#, elixir-autogen, elixir-format
+msgid "Provider type"
+msgstr "Type de fournisseur"
+
+#: lib/caltar_web/settings/calendar.html.heex:7
+#, elixir-autogen, elixir-format
+msgid "Providers"
+msgstr "Fournisseurs"
+
+#: lib/caltar_web/components/layouts.ex:65
+#, elixir-autogen, elixir-format
+msgid "Settings"
+msgstr "Réglages"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:321
+#, elixir-autogen, elixir-format
+msgid "Sport"
+msgstr "Sport"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:317
+#, elixir-autogen, elixir-format
+msgid "Sport channel"
+msgstr "Canal de sport"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:326
+#, elixir-autogen, elixir-format
+msgid "Team"
+msgstr "Équipe"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:282
+#, elixir-autogen, elixir-format
+msgid "To (optional)"
+msgstr "À (optionel)"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:335
+#, elixir-autogen, elixir-format
+msgid "URL"
+msgstr "URL"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:41
+#, elixir-autogen, elixir-format
+msgid "Update"
+msgstr "Mettre à jour"
+
+#: lib/caltar_web/settings/calendar/create_or_update_provider.ex:40
+#, elixir-autogen, elixir-format
+msgid "Update Provider"
+msgstr "Mettre à jour un fournisseur"
+
+#: lib/caltar_web/settings/calendar.html.heex:28
+#, elixir-autogen, elixir-format
+msgid "never"
+msgstr "jamais"
+
+#: lib/caltar_web/components/calendar.ex:170
+#, elixir-autogen, elixir-format
+msgid "%{age} yo"
+msgstr "%{age} ans"

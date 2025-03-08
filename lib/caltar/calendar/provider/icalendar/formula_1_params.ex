@@ -25,13 +25,13 @@ defmodule Caltar.Calendar.Provider.Icalendar.Formula1Params do
 
   defp extract_short_name(summary) do
     cond do
-      summary =~ "Sprint Qualifying" -> "Sprint Q"
-      summary =~ "Sprint" -> "Sprint"
+      summary =~ "Sprint Qualifying" -> "SQ"
+      summary =~ "Sprint" -> "S"
       summary =~ "FP1" -> "FP1"
       summary =~ "FP2" -> "FP2"
       summary =~ "FP3" -> "FP3"
-      summary =~ "Qualifying" -> "Qualifying"
-      true -> "Grand Prix"
+      summary =~ "Qualifying" -> "Q"
+      true -> "GP"
     end
   end
 

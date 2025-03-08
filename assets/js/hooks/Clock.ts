@@ -1,6 +1,6 @@
 const SECOND = 1000
 
-const padPart = part => part.toString().padStart(2, "0")
+const padPart = (part: Number) => part.toString().padStart(2, "0")
 
 const getDate = () => {
   const date = new Date()
