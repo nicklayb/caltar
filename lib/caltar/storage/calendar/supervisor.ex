@@ -8,13 +8,13 @@ defmodule Caltar.Storage.Calendar.Supervisor do
   end
 
   def init(args) do
-    %Calendar{id: id, slug: slug} = Keyword.fetch!(args, :calendar)
+    calendar = Keyword.fetch!(args, :calendar)
 
     Supervisor.init(
       [
-        {Caltar.Calendar.Server, id: id, slug: slug},
+        {Caltar.Calendar.Server, calendar: calendar},
         {DynamicSupervisor, strategy: :one_for_one},
-        {Caltar.Calendar.Controller, slug: slug, supervisor_pid: self()}
+        {Caltar.Calendar.Controller, slug: calendar.slug, supervisor_pid: self()}
       ],
       strategy: :one_for_one
     )

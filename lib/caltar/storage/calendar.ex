@@ -10,12 +10,14 @@ defmodule Caltar.Storage.Calendar do
     field(:name, :string)
     field(:slug, :string)
 
+    field(:display_mode, Box.Ecto.DynamicType, decoder: Caltar.Storage.Calendar.DisplayMode)
+
     has_many(:providers, Provider)
 
     timestamps()
   end
 
-  @required ~w(name)a
+  @required ~w(name display_mode)a
   def changeset(%Calendar{} = calendar \\ %Calendar{}, params) do
     calendar
     |> Ecto.Changeset.cast(params, @required)

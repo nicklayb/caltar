@@ -6,7 +6,6 @@ defmodule CaltarWeb.Components.Calendar do
   alias Caltar.Calendar.Provider.Birthdays, as: BirthdaysProvider
   alias Caltar.Calendar.Provider.Icalendar, as: IcalendarProvider
   alias Caltar.Calendar.Provider.Sport, as: SportProvider
-  alias Caltar.Storage.Configuration
 
   def render(assigns) do
     ~H"""

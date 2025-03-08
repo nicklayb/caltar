@@ -6,6 +6,7 @@ defmodule Caltar.Calendar.Server do
   alias Caltar.Calendar.Marker
   alias Caltar.Calendar.Server, as: CalendarServer
   alias Caltar.Calendar.StorageSupervisor
+  alias Caltar.Storage.Calendar, as: StorageCalendar
 
   require Logger
 
@@ -13,10 +14,11 @@ defmodule Caltar.Calendar.Server do
 
   @name Caltar.Calendar.Server
   def start_link(args) do
-    slug = Keyword.fetch!(args, :slug)
-    id = Keyword.fetch!(args, :id)
+    %StorageCalendar{id: id, slug: slug, display_mode: display_mode} =
+      Keyword.fetch!(args, :calendar)
+
     name = StorageSupervisor.registry_name({CalendarServer, id, slug})
-    GenServer.start_link(__MODULE__, args, name: name)
+    GenServer.start_link(__MODULE__, [id: id, slug: slug, display_mode: display_mode], name: name)
   end
 
   def init(args) do
@@ -89,9 +91,10 @@ defmodule Caltar.Calendar.Server do
   end
 
   defp init_state(args) do
-    calendar = Calendar.build(Caltar.Date.now!())
     slug = Keyword.fetch!(args, :slug)
     id = Keyword.fetch!(args, :id)
+    display_mode = Keyword.fetch!(args, :display_mode)
+    calendar = Calendar.build(Caltar.Date.now!(), display_mode)
 
     state = %CalendarServer{id: id, args: args, slug: slug, calendar: calendar}
 

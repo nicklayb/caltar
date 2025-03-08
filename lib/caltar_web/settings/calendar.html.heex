@@ -4,6 +4,10 @@
       <Components.h1>{calendar.name}</Components.h1>
 
       <div class="flex items-center">
+        <Components.h2>{gettext("Configuration")}</Components.h2>
+      </div>
+
+      <div class="flex items-center">
         <Components.h2>{gettext("Providers")}</Components.h2>
         <button class="ml-4 hover:text-pink-500" phx-click="calendar:provider:new">
           <Components.Icon.icon icon={:add} width={30} height={30} />

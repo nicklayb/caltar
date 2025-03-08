@@ -5,7 +5,7 @@ defmodule Caltar.Calendar do
 
   defstruct [:start_date, :end_date, :current_time, dates: [], events: %{}, markers: %{}]
 
-  def build(date_time, mode \\ {:relative, 1}) do
+  def build(date_time, mode \\ :current_month) do
     {start_date, end_date} =
       date_time
       |> Caltar.Date.to_date()
@@ -54,18 +54,22 @@ defmodule Caltar.Calendar do
     {start_date, end_date}
   end
 
-  defp mode_range(date_time, {:relative, week_count}) do
+  defp mode_range(date_time, {:relative, weeks_before, weeks_after}) do
     start_date =
       date_time
-      |> Caltar.Date.shift(week: -week_count)
+      |> Caltar.Date.shift(week: -weeks_before)
       |> Caltar.Date.start_of_week()
 
     end_date =
       date_time
-      |> Caltar.Date.shift(week: week_count)
+      |> Caltar.Date.shift(week: weeks_after)
       |> Caltar.Date.end_of_week()
 
     {start_date, end_date}
+  end
+
+  defp mode_range(date_time, {:relative, week_count}) do
+    mode_range(date_time, {:relative, week_count, week_count})
   end
 
   def events_for_date(%Calendar{events: events}, date) do
