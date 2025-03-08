@@ -12,6 +12,25 @@ defmodule Caltar.Date do
   def start_of_day?(%{hour: 0, minute: 0, second: 0}), do: true
   def start_of_day?(_), do: false
 
+  @days_in_week 7
+
+  def days_in_week, do: @days_in_week
+
+  def start_of_week(date) do
+    weekday = weekday(date)
+
+    shift(date, day: -weekday)
+  end
+
+  def end_of_week(date) do
+    weekday = weekday(date)
+
+    shift(date, day: @days_in_week - 1 - weekday)
+  end
+
+  def shift(%Date{} = date, shift), do: Date.shift(date, shift)
+  def shift(%DateTime{} = date, shift), do: DateTime.shift(date, shift)
+
   def start_of_month(date) do
     %{date | day: 1}
   end
@@ -38,6 +57,9 @@ defmodule Caltar.Date do
   def date_time_from_date(%Date{} = date, %Time{} = time \\ Time.new!(0, 0, 0)) do
     DateTime.new!(date, time, timezone())
   end
+
+  def to_date(%Date{} = date), do: date
+  def to_date(%DateTime{} = date_time), do: DateTime.to_date(date_time)
 
   @week [
     ~D[2025-01-05],

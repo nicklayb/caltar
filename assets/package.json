@@ -7,5 +7,13 @@
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "phoenix": "../deps/phoenix/assets/js/phoenix"
+  },
+  "devDependencies": {
+    "@types/phoenix": "^1.6.6",
+    "@types/phoenix_live_view": "^1.0.0",
+    "typescript": "^5.8.2"
+  }
 }

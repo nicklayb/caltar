@@ -1,16 +1,71 @@
 defmodule Caltar.Calendar do
   alias Caltar.Calendar
-  alias Caltar.Calendar.Builder, as: CalendarBuilder
   alias Caltar.Calendar.Event, as: CalendarEvent
   alias Caltar.Calendar.Marker, as: CalendarMarker
 
-  defstruct [:start_date, :end_date, :current_time, :dates, events: %{}, markers: %{}]
+  defstruct [:start_date, :end_date, :current_time, dates: [], events: %{}, markers: %{}]
 
-  def build(date_time) do
-    %{days: days, start_date: start_date, end_date: end_date} =
-      CalendarBuilder.build_month(date_time)
+  def build(date_time, mode \\ {:relative, 1}) do
+    {start_date, end_date} =
+      date_time
+      |> Caltar.Date.to_date()
+      |> mode_range(mode)
 
-    %Calendar{dates: days, start_date: start_date, end_date: end_date, current_time: date_time}
+    build_dates(%Calendar{
+      current_time: date_time,
+      start_date: start_date,
+      end_date: end_date
+    })
+  end
+
+  def build_dates(%Calendar{start_date: start_date, end_date: end_date} = calendar) do
+    dates =
+      start_date
+      |> build_dates(end_date, [])
+      |> Enum.reverse()
+      |> Enum.chunk_every(Caltar.Date.days_in_week())
+
+    %Calendar{calendar | dates: dates}
+  end
+
+  def build_dates(current_date, end_date, acc) do
+    new_acc = [current_date | acc]
+
+    if Date.compare(current_date, end_date) == :eq do
+      new_acc
+    else
+      current_date
+      |> Caltar.Date.shift(day: 1)
+      |> build_dates(end_date, new_acc)
+    end
+  end
+
+  defp mode_range(date_time, :current_month) do
+    start_date =
+      date_time
+      |> Caltar.Date.start_of_month()
+      |> Caltar.Date.start_of_week()
+
+    end_date =
+      date_time
+      |> Caltar.Date.end_of_month()
+      |> Caltar.Date.end_of_week()
+
+    {start_date, end_date}
+  end
+
+  defp mode_range(date_time, {:relative, week_count}) do
+    start_date =
+      date_time
+      |> Caltar.Date.shift(week: -week_count)
+      |> Caltar.Date.start_of_week()
+
+    end_date =
+      date_time
+      |> Caltar.Date.shift(week: week_count)
+      |> Caltar.Date.end_of_week()
+
+    {start_date, end_date}
   end
 
   def events_for_date(%Calendar{events: events}, date) do
