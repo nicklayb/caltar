@@ -1,10 +1,13 @@
 defmodule CaltarWeb.Settings.Calendar do
+  alias Phoenix.LiveView.AsyncResult
   use CaltarWeb, :live_view
 
   alias Caltar.Repo
   alias Caltar.Storage
   alias Caltar.Storage.Calendar
+  alias CaltarWeb.Components.Form
   alias CaltarWeb.Settings.Calendar.Provider, as: CalendarProvider
+  alias CaltarWeb.Settings.Calendar.EditCalendarForm
 
   def mount(%{"slug" => slug}, _session, socket) do
     socket =
@@ -12,15 +15,77 @@ defmodule CaltarWeb.Settings.Calendar do
       |> assign(:slug, slug)
       |> assign(:page_key, {:calendar, slug})
       |> assign(:expanded, MapSet.new())
-      |> assign_async([:calendar], fn -> load_calendar(slug) end)
+      |> assign(:base_types, [
+        {gettext("Choose"), ""}
+        | Enum.map(EditCalendarForm.base_types(), &{Html.titleize(&1), &1})
+      ])
+      |> assign(:calendar, AsyncResult.loading())
+      |> start_async(:load_calendar, fn -> load_calendar(slug) end)
       |> subscribe("calendar:#{slug}")
 
     {:ok, socket}
   end
 
+  defp assign_form(socket, params \\ %{})
+
+  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    assign(socket, :form, to_form(changeset))
+  end
+
+  defp assign_form(socket, params) do
+    assign_form(socket, changeset(socket, params))
+  end
+
+  defp changeset(%{assigns: %{calendar: %AsyncResult{result: calendar}}}, params) do
+    calendar
+    |> EditCalendarForm.from_calendar()
+    |> EditCalendarForm.changeset(params)
+  end
+
   defp load_calendar(slug) do
     with {:ok, %Calendar{} = calendar} <- Storage.get_calendar_by_slug(slug) do
-      {:ok, %{calendar: Repo.preload(calendar, [:providers])}}
+      Repo.preload(calendar, [:providers])
+    end
+  end
+
+  def handle_async(:load_calendar, {:ok, calendar}, socket) do
+    socket =
+      socket
+      |> assign(:calendar, AsyncResult.ok(calendar))
+      |> assign_form()
+
+    {:noreply, socket}
+  end
+
+  def handle_event("calendar:change", %{"edit_calendar_form" => params}, socket) do
+    socket = assign_form(socket, params)
+    {:noreply, socket}
+  end
+
+  def handle_event(
+        "calendar:save",
+        %{"edit_calendar_form" => params},
+        %{assigns: %{calendar: %AsyncResult{result: calendar}}} = socket
+      ) do
+    socket = assign_form(socket, params)
+
+    with {:ok, form} <- Ecto.Changeset.apply_action(socket.assigns.form.source, :insert),
+         params <- EditCalendarForm.to_changeset_params(form, calendar),
+         {:ok, calendar} <-
+           execute_use_case(socket, Caltar.Storage.UseCase.UpdateCalendar, params) do
+      socket =
+        socket
+        |> update_async_result(:calendar, fn _ -> Repo.preload(calendar, [:providers]) end)
+        |> assign_form()
+
+      {:noreply, socket}
+    else
+      {:error, %Ecto.Changeset{} = changeset} ->
+        socket = assign_form(socket, changeset)
+        {:noreply, socket}
+
+      _ ->
+        {:noreply, socket}
     end
   end
 

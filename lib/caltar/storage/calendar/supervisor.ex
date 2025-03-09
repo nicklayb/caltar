@@ -1,14 +1,25 @@
 defmodule Caltar.Storage.Calendar.Supervisor do
   use Supervisor
 
+  alias Caltar.Calendar.StorageSupervisor
   alias Caltar.Storage.Calendar
+  alias Caltar.Repo
+
+  @namespace Caltar.Storage.Calendar.Supervisor
 
   def start_link(args) do
-    Supervisor.start_link(__MODULE__, args)
+    %Calendar{id: id, slug: slug} = Keyword.fetch!(args, :calendar)
+
+    Supervisor.start_link(__MODULE__, args,
+      name: StorageSupervisor.registry_name({@namespace, id, slug})
+    )
   end
 
   def init(args) do
-    calendar = Keyword.fetch!(args, :calendar)
+    calendar =
+      args
+      |> Keyword.fetch!(:calendar)
+      |> then(&Repo.get(Calendar, &1.id))
 
     Supervisor.init(
       [

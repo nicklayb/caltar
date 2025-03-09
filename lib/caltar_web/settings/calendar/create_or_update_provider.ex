@@ -1,4 +1,5 @@
 defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
+  alias Caltar.Storage.Configuration.Formula1
   use CaltarWeb, :live_component
 
   alias Caltar.Calendar.Provider.SportSchedule, as: SportProvider
@@ -119,8 +120,15 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
     {:noreply, socket}
   end
 
+  def handle_event(
+        "change",
+        %{"_target" => ["provider", "configuration", "parts"], "params" => params},
+        socket
+      ) do
+  end
+
   def handle_event("change", %{"provider" => provider_params}, socket) do
-    socket = assign_form(socket, provider_params)
+    socket = assign_form(socket, provider_params) |> tap(&IO.inspect(&1.assigns.form))
 
     {:noreply, socket}
   end
@@ -325,6 +333,23 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
       <Form.select_input field={@form[:team_id]} options={@teams} element_class="w-full">
         <:label>{gettext("Team")}</:label>
       </Form.select_input>
+    <% end %>
+    """
+  end
+
+  defp configuration_form(%{type: Formula1} = assigns) do
+    assigns = assign(assigns, :parts, Formula1.parts())
+
+    ~H"""
+    <%= for {value, label} <- @parts do %>
+      <Form.checkbox
+        field={@form[:parts]}
+        multiple={true}
+        value={value}
+        checked={to_string(value) in @form[:parts].value}
+      >
+        <:label>{label}</:label>
+      </Form.checkbox>
     <% end %>
     """
   end

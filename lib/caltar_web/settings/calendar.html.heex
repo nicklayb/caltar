@@ -6,6 +6,29 @@
       <div class="flex items-center">
         <Components.h2>{gettext("Configuration")}</Components.h2>
       </div>
+      <.form for={@form} phx-change="calendar:change" phx-submit="calendar:save">
+        <Components.h3>{gettext("Display mode")}</Components.h3>
+        <Form.select_input field={@form[:base_type]} options={@base_types}>
+          <:label>{gettext("Display mode")}</:label>
+        </Form.select_input>
+
+        <%= case @form[:base_type].value do %>
+          <% "relative" -> %>
+            <div class="flex w-full flex-row mb-3">
+              <Form.text_input field={@form[:weeks_before]} element_class="flex-1 mr-0.5">
+                <:label>{gettext("Weeks before")}</:label>
+              </Form.text_input>
+              <Form.text_input field={@form[:weeks_after]} element_class="flex-1 ml-0.5">
+                <:label>{gettext("Weeks after")}</:label>
+              </Form.text_input>
+            </div>
+          <% _ -> %>
+        <% end %>
+
+        <Form.button type={:submit}>
+          {gettext("Save")}
+        </Form.button>
+      </.form>
 
       <div class="flex items-center">
         <Components.h2>{gettext("Providers")}</Components.h2>

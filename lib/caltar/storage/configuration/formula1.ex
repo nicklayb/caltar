@@ -5,7 +5,7 @@ defmodule Caltar.Storage.Configuration.Formula1 do
   alias Caltar.Storage.Configuration.Formula1
 
   embedded_schema do
-    field(:parts, {:array, :string})
+    field(:parts, {:array, :string}, default: [])
     field(:url, :string)
   end
 

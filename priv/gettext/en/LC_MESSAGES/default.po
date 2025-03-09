@@ -11,7 +11,7 @@ msgstr ""
 "Language: en\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: lib/caltar_web/components/calendar.ex:89
+#: lib/caltar_web/components/calendar.ex:88
 #, elixir-autogen, elixir-format
 msgid "+%{count} more"
 msgstr ""
@@ -21,7 +21,7 @@ msgstr ""
 msgid "Birthdays"
 msgstr ""
 
-#: lib/caltar_web/settings/calendar.html.heex:76
+#: lib/caltar_web/settings/calendar.html.heex:103
 #, elixir-autogen, elixir-format
 msgid "Calendar does not exists"
 msgstr ""
@@ -31,6 +31,7 @@ msgstr ""
 msgid "Calendars"
 msgstr ""
 
+#: lib/caltar_web/settings/calendar.ex:19
 #: lib/caltar_web/settings/calendar/create_or_update_provider.ex:28
 #: lib/caltar_web/settings/calendar/create_or_update_provider.ex:153
 #: lib/caltar_web/settings/calendar/create_or_update_provider.ex:188
@@ -55,7 +56,7 @@ msgstr ""
 msgid "Every"
 msgstr ""
 
-#: lib/caltar_web/settings/calendar.html.heex:32
+#: lib/caltar_web/settings/calendar.html.heex:59
 #, elixir-autogen, elixir-format
 msgid "Every %{value}"
 msgstr ""
@@ -85,7 +86,7 @@ msgstr ""
 msgid "Icon (optional)"
 msgstr ""
 
-#: lib/caltar_web/settings/calendar.html.heex:70
+#: lib/caltar_web/settings/calendar.html.heex:97
 #, elixir-autogen, elixir-format
 msgid "No providers"
 msgstr ""
@@ -105,7 +106,7 @@ msgstr ""
 msgid "Provider type"
 msgstr ""
 
-#: lib/caltar_web/settings/calendar.html.heex:7
+#: lib/caltar_web/settings/calendar.html.heex:34
 #, elixir-autogen, elixir-format
 msgid "Providers"
 msgstr ""
@@ -150,12 +151,38 @@ msgstr ""
 msgid "Update Provider"
 msgstr ""
 
-#: lib/caltar_web/settings/calendar.html.heex:28
+#: lib/caltar_web/settings/calendar.html.heex:55
 #, elixir-autogen, elixir-format
 msgid "never"
 msgstr ""
 
-#: lib/caltar_web/components/calendar.ex:170
+#: lib/caltar_web/components/calendar.ex:169
 #, elixir-autogen, elixir-format
 msgid "%{age} yo"
+msgstr ""
+
+#: lib/caltar_web/settings/calendar.html.heex:7
+#, elixir-autogen, elixir-format
+msgid "Configuration"
+msgstr ""
+
+#: lib/caltar_web/settings/calendar.html.heex:10
+#: lib/caltar_web/settings/calendar.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Display mode"
+msgstr ""
+
+#: lib/caltar_web/settings/calendar.html.heex:29
+#, elixir-autogen, elixir-format
+msgid "Save"
+msgstr ""
+
+#: lib/caltar_web/settings/calendar.html.heex:22
+#, elixir-autogen, elixir-format
+msgid "Weeks after"
+msgstr ""
+
+#: lib/caltar_web/settings/calendar.html.heex:19
+#, elixir-autogen, elixir-format
+msgid "Weeks before"
 msgstr ""

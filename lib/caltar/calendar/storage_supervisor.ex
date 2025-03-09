@@ -18,7 +18,13 @@ defmodule Caltar.Calendar.StorageSupervisor do
     Storage.Calendar
     |> Caltar.Repo.all()
     |> Enum.map(&build_child/1)
-    |> then(&[{Registry, keys: :unique, name: registry_name()} | &1])
+    |> then(
+      &[
+        {Registry, keys: :unique, name: registry_name()},
+        Caltar.Storage.Controller
+        | &1
+      ]
+    )
   end
 
   defp build_child(%Storage.Calendar{} = calendar) do

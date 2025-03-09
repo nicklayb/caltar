@@ -11,7 +11,7 @@ msgstr ""
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n>1);\n"
 
-#: lib/caltar_web/components/calendar.ex:89
+#: lib/caltar_web/components/calendar.ex:88
 #, elixir-autogen, elixir-format
 msgid "+%{count} more"
 msgstr "+%{count} de plus"
@@ -21,7 +21,7 @@ msgstr "+%{count} de plus"
 msgid "Birthdays"
 msgstr "Anniversaires"
 
-#: lib/caltar_web/settings/calendar.html.heex:76
+#: lib/caltar_web/settings/calendar.html.heex:103
 #, elixir-autogen, elixir-format
 msgid "Calendar does not exists"
 msgstr "Le calendrier n'existe pas"
@@ -31,6 +31,7 @@ msgstr "Le calendrier n'existe pas"
 msgid "Calendars"
 msgstr "Calendriers"
 
+#: lib/caltar_web/settings/calendar.ex:19
 #: lib/caltar_web/settings/calendar/create_or_update_provider.ex:28
 #: lib/caltar_web/settings/calendar/create_or_update_provider.ex:153
 #: lib/caltar_web/settings/calendar/create_or_update_provider.ex:188
@@ -55,7 +56,7 @@ msgstr "Créer un fournisseur"
 msgid "Every"
 msgstr "Occurence"
 
-#: lib/caltar_web/settings/calendar.html.heex:32
+#: lib/caltar_web/settings/calendar.html.heex:59
 #, elixir-autogen, elixir-format
 msgid "Every %{value}"
 msgstr "Tous les %{value}"
@@ -85,7 +86,7 @@ msgstr "Icône"
 msgid "Icon (optional)"
 msgstr "Icône (optionel)"
 
-#: lib/caltar_web/settings/calendar.html.heex:70
+#: lib/caltar_web/settings/calendar.html.heex:97
 #, elixir-autogen, elixir-format
 msgid "No providers"
 msgstr "Aucun fournisseur"
@@ -105,7 +106,7 @@ msgstr "Nom du fournisseur"
 msgid "Provider type"
 msgstr "Type de fournisseur"
 
-#: lib/caltar_web/settings/calendar.html.heex:7
+#: lib/caltar_web/settings/calendar.html.heex:34
 #, elixir-autogen, elixir-format
 msgid "Providers"
 msgstr "Fournisseurs"
@@ -150,12 +151,38 @@ msgstr "Mettre à jour"
 msgid "Update Provider"
 msgstr "Mettre à jour un fournisseur"
 
-#: lib/caltar_web/settings/calendar.html.heex:28
+#: lib/caltar_web/settings/calendar.html.heex:55
 #, elixir-autogen, elixir-format
 msgid "never"
 msgstr "jamais"
 
-#: lib/caltar_web/components/calendar.ex:170
+#: lib/caltar_web/components/calendar.ex:169
 #, elixir-autogen, elixir-format
 msgid "%{age} yo"
 msgstr "%{age} ans"
+
+#: lib/caltar_web/settings/calendar.html.heex:7
+#, elixir-autogen, elixir-format
+msgid "Configuration"
+msgstr ""
+
+#: lib/caltar_web/settings/calendar.html.heex:10
+#: lib/caltar_web/settings/calendar.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Display mode"
+msgstr "Mode d'affichage"
+
+#: lib/caltar_web/settings/calendar.html.heex:29
+#, elixir-autogen, elixir-format
+msgid "Save"
+msgstr "Sauvegarder"
+
+#: lib/caltar_web/settings/calendar.html.heex:22
+#, elixir-autogen, elixir-format
+msgid "Weeks after"
+msgstr "Semaines après"
+
+#: lib/caltar_web/settings/calendar.html.heex:19
+#, elixir-autogen, elixir-format
+msgid "Weeks before"
+msgstr "Semaines avant"
