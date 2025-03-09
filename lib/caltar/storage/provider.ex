@@ -55,4 +55,10 @@ defmodule Caltar.Storage.Provider do
         Ecto.Changeset.put_change(changeset, :every, every)
     end
   end
+
+  def configuration_type(%Provider{configuration: nil}), do: nil
+
+  def configuration_type(%Provider{configuration: %struct{}}) do
+    PolymorphicEmbed.get_polymorphic_type(Provider, :configuration, struct)
+  end
 end

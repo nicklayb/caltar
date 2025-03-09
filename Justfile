@@ -27,7 +27,7 @@ docker-run:
 setup: deps setup-assets create-db reset-db
 
 # Starts a development server
-dev: create-db iex-server
+dev: deps create-db iex-server
 
 # Install Node assets
 setup-assets:

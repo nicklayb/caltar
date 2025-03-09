@@ -65,9 +65,16 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
   end
 
   defp changeset(%{assigns: assigns}, params) do
-    assigns
-    |> Map.get(:provider, %Provider{})
-    |> Provider.changeset(params)
+    provider = Map.get(assigns, :provider, %Provider{})
+
+    params =
+      Box.Map.put_new_lazy(params, :configuration_type, fn ->
+        provider
+        |> Provider.configuration_type()
+        |> to_string()
+      end)
+
+    Provider.changeset(provider, params)
   end
 
   def handle_event(
@@ -118,13 +125,6 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
       |> load_sports(sport_provider)
 
     {:noreply, socket}
-  end
-
-  def handle_event(
-        "change",
-        %{"_target" => ["provider", "configuration", "parts"], "params" => params},
-        socket
-      ) do
   end
 
   def handle_event("change", %{"provider" => provider_params}, socket) do
