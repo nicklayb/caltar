@@ -128,7 +128,7 @@ defmodule CaltarWeb.Settings.Calendar.CreateOrUpdateProvider do
   end
 
   def handle_event("change", %{"provider" => provider_params}, socket) do
-    socket = assign_form(socket, provider_params) |> tap(&IO.inspect(&1.assigns.form))
+    socket = assign_form(socket, provider_params)
 
     {:noreply, socket}
   end

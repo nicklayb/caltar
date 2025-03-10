@@ -157,7 +157,9 @@ defmodule CaltarWeb.Components.Calendar do
               class="h-2"
             />
             {short_name}
-            <img src={"https://flagcdn.com/w40/#{String.downcase(country_code)}.png"} class="h-3" />
+            <%= if is_binary(country_code) do %>
+              <img src={"https://flagcdn.com/w40/#{String.downcase(country_code)}.png"} class="h-3" />
+            <% end %>
           </div>
         <% %IcalendarProvider.Params{icon: icon} -> %>
           <div class="flex">

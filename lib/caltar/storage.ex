@@ -13,6 +13,12 @@ defmodule Caltar.Storage do
     |> Repo.exists?()
   end
 
+  def calendar_slug_exists?(calendar_slug) do
+    calendar_slug
+    |> Calendar.Query.by_slug()
+    |> Repo.exists?()
+  end
+
   def calendar_exists?(calendar_id) do
     calendar_id
     |> Calendar.Query.by_id()

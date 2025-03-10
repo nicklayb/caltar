@@ -21,7 +21,15 @@ docker-push:
 release-docker: docker-build docker-tag docker-push
 
 docker-run: 
-	docker run -e SECRET_KEY_BASE=$SECRET_KEY_BASE -e LIVE_VIEW_SALT=$LIVE_VIEW_SALT -e TZ=$TZ -e LOCALE=$LOCALE -e DATABASE_PATH=/opt/db/db.sqlite -p 4001:4000 {{docker_image}}
+	docker run \
+		-e SECRET_KEY_BASE=$SECRET_KEY_BASE \
+		-e LIVE_VIEW_SALT=$LIVE_VIEW_SALT \
+		-e TZ=$TZ \
+		-e GEONAMES_USERNAME=$GEONAMES_USERNAME \
+		-e LOCALE=$LOCALE \
+		-e DATABASE_PATH=/opt/data/db.sqlite \
+		-p 4001:4000 \
+		{{docker_image}}
 
 # Fetches deps, setup assets and create the database
 setup: deps setup-assets create-db reset-db

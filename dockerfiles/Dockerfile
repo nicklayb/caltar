@@ -36,6 +36,7 @@ ARG APP_NAME
 ENV APP_NAME=${APP_NAME}
 
 ENV ROOT_FOLDER=/opt
+ENV DATA_FOLDER=/data
 
 # Update kernel and install runtime dependencies
 RUN apk --no-cache update && \
@@ -57,10 +58,12 @@ RUN ls .
 COPY dockerfiles/entrypoint.sh /usr/local/bin
 RUN chmod a+x /usr/local/bin/entrypoint.sh
 RUN mkdir ${ROOT_FOLDER}/logs
+RUN mkdir ${DATA_FOLDER}
 
 # Create a non-root user
 RUN adduser -D caltar && \
-    chown -R caltar: ${ROOT_FOLDER}
+    chown -R caltar: ${ROOT_FOLDER} && \
+    chown -R caltar: ${DATA_FOLDER}
 
 USER caltar
 

@@ -7,6 +7,7 @@ defmodule Caltar.Application do
       {Box.Cache.Server, name: Caltar.Cache},
       Caltar.Repo,
       {Ecto.Migrator, repos: ecto_repos()},
+      Caltar.Boot,
       Caltar.PubSub,
       Caltar.Clock,
       Caltar.Calendar.StorageSupervisor,
