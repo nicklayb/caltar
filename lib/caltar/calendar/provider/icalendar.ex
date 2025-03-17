@@ -22,13 +22,25 @@ defmodule Caltar.Calendar.Provider.Icalendar do
   end
 
   defp filter_interested_events(events, %DateTime{} = date_time) do
-    Enum.filter(events, fn
+    two_months_after = Caltar.Date.shift(date_time, month: 2)
+
+    events
+    |> Stream.flat_map(fn
+      %ICalendar.Event{rrule: %{} = rrule} = event ->
+        end_date = Box.Map.get_with_default(rrule, :until, two_months_after)
+        ICalendar.Recurrence.get_recurrences(event, end_date)
+
+      event ->
+        [event]
+    end)
+    |> Stream.filter(fn
       %ICalendar.Event{dtstart: %DateTime{} = start_time} ->
         Caltar.Date.same_month?(date_time, start_time)
 
       _ ->
         false
     end)
+    |> Enum.to_list()
   end
 
   @impl Caltar.Calendar.Provider

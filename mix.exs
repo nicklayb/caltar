@@ -36,7 +36,7 @@ defmodule Caltar.MixProject do
       {:ex_cldr_numbers, "~> 2.33"},
       {:floki, "~> 0.37.0"},
       {:gettext, "~> 0.26"},
-      {:icalendar, git: "https://github.com/nicklayb/icalendar", tag: "1.2.2"},
+      {:icalendar, git: "https://github.com/nicklayb/icalendar", tag: "1.2.3"},
       {:jason, "~> 1.2"},
       {:phoenix, "~> 1.7.19"},
       {:phoenix_ecto, "~> 4.5"},
