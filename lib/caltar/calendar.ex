@@ -3,7 +3,19 @@ defmodule Caltar.Calendar do
   alias Caltar.Calendar.Event, as: CalendarEvent
   alias Caltar.Calendar.Marker, as: CalendarMarker
 
-  defstruct [:start_date, :end_date, :current_time, dates: [], events: %{}, markers: %{}]
+  defstruct [:start_date, :end_date, :current_time, :mode, dates: [], events: %{}, markers: %{}]
+
+  def rebuild(%Calendar{} = calendar, date_time) do
+    new_calendar = build(date_time, calendar.mode)
+
+    %Calendar{
+      calendar
+      | start_date: new_calendar.start_date,
+        current_time: new_calendar.current_time,
+        end_date: new_calendar.end_date,
+        dates: new_calendar
+    }
+  end
 
   def build(date_time, mode \\ :current_month) do
     {start_date, end_date} =
@@ -12,6 +24,7 @@ defmodule Caltar.Calendar do
       |> mode_range(mode)
 
     build_dates(%Calendar{
+      mode: mode,
       current_time: date_time,
       start_date: start_date,
       end_date: end_date

@@ -39,6 +39,14 @@ defmodule Caltar.Calendar.Server do
     GenServer.cast(name, :reset)
   end
 
+  def handle_info(
+        %Box.PubSub.Message{topic: "clock:day", message: :updated},
+        %CalendarServer{calendar: calendar} = state
+      ) do
+    new_calendar = Calendar.rebuild(calendar, now())
+    {:noreply, %CalendarServer{state | calendar: new_calendar}}
+  end
+
   def handle_cast(:reset, state) do
     {:noreply, reset_state(state)}
   end
@@ -94,9 +102,11 @@ defmodule Caltar.Calendar.Server do
     slug = Keyword.fetch!(args, :slug)
     id = Keyword.fetch!(args, :id)
     display_mode = Keyword.fetch!(args, :display_mode)
-    calendar = Calendar.build(Caltar.Date.now!(), display_mode)
+    calendar = Calendar.build(now(), display_mode)
 
     state = %CalendarServer{id: id, args: args, slug: slug, calendar: calendar}
+
+    Caltar.PubSub.subscribe("clock:day")
 
     send_update(state)
   end
@@ -116,4 +126,6 @@ defmodule Caltar.Calendar.Server do
   end
 
   defp inspect_provider(%CalendarServer{slug: slug}), do: slug
+
+  defp now, do: Caltar.Date.now!()
 end

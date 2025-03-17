@@ -64,6 +64,12 @@ defmodule Caltar.Calendar.Poller do
     {:noreply, poller}
   end
 
+  @day_updated_timer :timer.seconds(5)
+  def handle_info(%Box.PubSub.Message{topic: "clock:day", message: :updated}, poller) do
+    Process.send_after(self(), :poll, @day_updated_timer)
+    {:noreply, poller}
+  end
+
   def handle_info(:stop, poller) do
     {:stop, :normal, push_events(poller, [])}
   end
@@ -172,6 +178,8 @@ defmodule Caltar.Calendar.Poller do
     color = Keyword.fetch!(args, :color)
 
     initial_poller_state = Keyword.get(args, :initial_state)
+
+    Caltar.PubSub.subscribe("clock:day")
 
     state = %Poller{
       id: id,
